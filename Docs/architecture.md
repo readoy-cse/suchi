@@ -309,10 +309,11 @@ suchi/
 ├── Docs/
 │   └── architecture.md
 ├── .gitignore
+├── package.json
 └── README.md
 ```
 
-Each application has its own package manifest and can be installed and run independently. Backend secrets belong in `backend/.env`, which must not be committed.
+Each application has its own package manifest. Root scripts can run the frontend and backend independently. Backend secrets belong in `backend/.env`, which must not be committed.
 
 The agent may adjust this structure if it has a clear reason, but it must preserve module boundaries and update this document if the structure changes.
 
@@ -404,7 +405,7 @@ The agent may adjust this structure if it has a clear reason, but it must preser
 }
 ```
 
-Choose either a unified `Submission` model that becomes the published record or a separate published-content model with a clear reference. Avoid duplicating the same content without a reason. Document the selected approach.
+Suchi uses the unified `Submission` model as the published record. Approval changes the record's status to `approved`; authenticated student feeds query approved records only. The content is not copied into a second collection.
 
 ### Comment
 
