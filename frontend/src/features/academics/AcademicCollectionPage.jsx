@@ -3,6 +3,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import { WorkspaceLayout } from "../../layouts/WorkspaceLayout.jsx";
 import { useAuth } from "../auth/useAuth.js";
 import { CommentsPanel } from "../comments/CommentsPanel.jsx";
+import { ConfirmDialog } from "../../components/ConfirmDialog.jsx";
 import { api } from "../../lib/api.js";
 
 const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -13,16 +14,16 @@ const resources = {
     description: "Weekly classes, rooms, instructors, and course resources.",
     fields: [
       { name: "courseTitle", label: "Course title", required: true },
-      { name: "courseCode", label: "Course code", required: true },
+      { name: "courseCode", label: "Course code (optional)" },
       { name: "teacher", label: "Teacher", required: true },
       { name: "day", label: "Day", type: "select", options: days, required: true },
       { name: "startTime", label: "Starts", type: "time", required: true },
       { name: "endTime", label: "Ends", type: "time", required: true },
       { name: "room", label: "Room", required: true },
       { name: "topic", label: "Topic or note", type: "textarea" },
-      { name: "resourceUrl", label: "Resource URL", type: "url" },
+      { name: "resourceUrl", label: "Resource URL (optional)", type: "url" },
     ],
-    subtitle: (item) => `${item.courseCode} · ${item.day} · ${item.startTime}–${item.endTime} · ${item.room}`,
+    subtitle: (item) => [item.courseCode, item.day, `${item.startTime}–${item.endTime}`, item.room].filter(Boolean).join(" · "),
     detail: (item) => item.topic,
     link: (item) => item.resourceUrl,
     linkLabel: "Open class resource",
@@ -32,16 +33,16 @@ const resources = {
     description: "Exam dates, rooms, topics, and study suggestions.",
     fields: [
       { name: "courseTitle", label: "Course title", required: true },
-      { name: "courseCode", label: "Course code", required: true },
+      { name: "courseCode", label: "Course code (optional)" },
       { name: "examType", label: "Exam type", type: "select", options: ["Quiz", "Midterm", "Final", "Presentation", "Other"], required: true },
       { name: "date", label: "Date", type: "date", required: true },
       { name: "startTime", label: "Starts", type: "time", required: true },
       { name: "room", label: "Room", required: true },
       { name: "topics", label: "Topics (one per line)", type: "textarea" },
       { name: "suggestion", label: "Study suggestions", type: "textarea" },
-      { name: "resourceUrl", label: "Resource URL", type: "url" },
+      { name: "resourceUrl", label: "Resource URL (optional)", type: "url" },
     ],
-    subtitle: (item) => `${item.courseCode} · ${new Date(item.date).toLocaleDateString()} · ${item.startTime} · ${item.room}`,
+    subtitle: (item) => [item.courseCode, new Date(item.date).toLocaleDateString(), item.startTime, item.room].filter(Boolean).join(" · "),
     detail: (item) => [item.topics?.join(" · "), item.suggestion].filter(Boolean).join("\n"),
     link: (item) => item.resourceUrl,
     linkLabel: "Open exam resource",
@@ -53,12 +54,9 @@ const resources = {
       { name: "title", label: "Notice title", required: true },
       { name: "category", label: "Category", type: "select", options: ["Academic", "Schedule", "Event", "General"], required: true },
       { name: "body", label: "Notice", type: "textarea", required: true },
-      { name: "attachmentUrl", label: "Attachment or resource URL", type: "url" },
     ],
     subtitle: (item) => `${item.category} · ${new Date(item.publishedAt).toLocaleDateString()}`,
     detail: (item) => item.body,
-    link: (item) => item.attachmentUrl,
-    linkLabel: "Open attachment",
   },
 };
 
@@ -96,6 +94,7 @@ export function AcademicCollectionPage({ type, mode = "list" }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   useEffect(() => {
     let active = true;
@@ -154,7 +153,6 @@ export function AcademicCollectionPage({ type, mode = "list" }) {
   }
 
   async function deleteItem(item) {
-    if (!window.confirm(`Delete “${item.courseTitle ?? item.title}”? This cannot be undone.`)) return;
     setError("");
     setNotice("");
     try {
@@ -162,8 +160,10 @@ export function AcademicCollectionPage({ type, mode = "list" }) {
       setItems((current) => current.filter((record) => record._id !== item._id));
       if (editingId === item._id) resetForm();
       setNotice("Item deleted.");
+      setDeleteTarget(null);
     } catch (deleteError) {
       setError(deleteError.message);
+      setDeleteTarget(null);
     }
   }
 
@@ -229,7 +229,7 @@ export function AcademicCollectionPage({ type, mode = "list" }) {
                     <td className="px-4 py-4"><span className="font-semibold text-[#17392f]">{item.courseTitle}</span></td>
                     <td className="whitespace-nowrap px-4 py-4">{type === "routines" ? <><span>{item.day}</span><span className="mt-1 block text-xs text-[#63756d]">{item.startTime} - {item.endTime}</span></> : <><span>{new Date(item.date).toLocaleDateString()}</span><span className="mt-1 block text-xs text-[#63756d]">{item.startTime}</span></>}</td>
                     <td className="px-4 py-4">{item.room}</td>
-                    {canManage && <td className="px-4 py-4"><div className="flex items-center gap-2" onClick={(event) => event.stopPropagation()}><Link aria-label={`Edit ${item.courseTitle}`} className="rounded-md border border-[#cbd4cb] px-2.5 py-1.5 text-xs font-semibold hover:bg-[#eff2e9]" to={`/${type}/edit/${item._id}`}>Edit</Link><button aria-label={`Delete ${item.courseTitle}`} className="rounded-md border border-[#d5a899] px-2.5 py-1.5 text-xs font-semibold text-[#8b3c2a] hover:bg-[#fbefea]" type="button" onClick={() => deleteItem(item)}>Delete</button></div></td>}
+                    {canManage && <td className="px-4 py-4"><div className="flex items-center gap-2" onClick={(event) => event.stopPropagation()}><Link aria-label={`Edit ${item.courseTitle}`} className="rounded-md border border-[#cbd4cb] px-2.5 py-1.5 text-xs font-semibold hover:bg-[#eff2e9]" to={`/${type}/edit/${item._id}`}>Edit</Link><button aria-label={`Delete ${item.courseTitle}`} className="rounded-md border border-[#d5a899] px-2.5 py-1.5 text-xs font-semibold text-[#8b3c2a] hover:bg-[#fbefea]" type="button" onClick={() => setDeleteTarget(item)}>Delete</button></div></td>}
                   </tr>
                 </tbody>
               ))}
@@ -244,15 +244,16 @@ export function AcademicCollectionPage({ type, mode = "list" }) {
                     <h2 className="text-lg font-semibold">{item.title}</h2>
                     <p className="mt-1 text-xs font-medium text-[#849189]">{resource.subtitle(item)}</p>
                     {resource.detail(item) && <p className="mt-3 whitespace-pre-line text-sm leading-6 text-[#354f45]">{resource.detail(item)}</p>}
-                    {resource.link(item) && <a className="mt-3 inline-block text-sm font-semibold text-[#245444] underline underline-offset-4" href={resource.link(item)} target="_blank" rel="noreferrer">{resource.linkLabel}</a>}
+                    {resource.link?.(item) && <a className="mt-3 inline-block text-sm font-semibold text-[#245444] underline underline-offset-4" href={resource.link(item)} target="_blank" rel="noreferrer">{resource.linkLabel}</a>}
                   </div>
-                  {canManage && <div className="flex shrink-0 gap-2"><Link className="rounded-md border border-[#cbd4cb] px-3 py-2 text-xs font-semibold hover:bg-[#eff2e9]" to={`/${type}/edit/${item._id}`}>Edit</Link><button className="rounded-md border border-[#d5a899] px-3 py-2 text-xs font-semibold text-[#8b3c2a] hover:bg-[#fbefea]" type="button" onClick={() => deleteItem(item)}>Delete</button></div>}
+                  {canManage && <div className="flex shrink-0 gap-2"><Link className="rounded-md border border-[#cbd4cb] px-3 py-2 text-xs font-semibold hover:bg-[#eff2e9]" to={`/${type}/edit/${item._id}`}>Edit</Link><button className="rounded-md border border-[#d5a899] px-3 py-2 text-xs font-semibold text-[#8b3c2a] hover:bg-[#fbefea]" type="button" onClick={() => setDeleteTarget(item)}>Delete</button></div>}
                 </div>
                 <CommentsPanel contentType="notice" contentId={item._id} />
               </article>
             ))}
           </div>
         ))}
+        {deleteTarget && <ConfirmDialog title="Delete this item?" message={`“${deleteTarget.courseTitle ?? deleteTarget.title}” will be permanently deleted.`} confirmLabel="Delete" onCancel={() => setDeleteTarget(null)} onConfirm={() => deleteItem(deleteTarget)} />}
       </main>
     </WorkspaceLayout>
   );
@@ -267,6 +268,7 @@ export function AcademicDetailPage({ type }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const canManage = user.role === "admin" || user.role === "cr";
 
   useEffect(() => {
@@ -279,7 +281,6 @@ export function AcademicDetailPage({ type }) {
   }, [id, type]);
 
   async function deleteItem() {
-    if (!window.confirm(`Delete “${item.courseTitle}”? This cannot be undone.`)) return;
     setDeleting(true);
     setError("");
     try {
@@ -288,6 +289,7 @@ export function AcademicDetailPage({ type }) {
     } catch (deleteError) {
       setError(deleteError.message);
       setDeleting(false);
+      setConfirmDelete(false);
     }
   }
 
@@ -298,7 +300,7 @@ export function AcademicDetailPage({ type }) {
         {loading ? <p className="py-12 text-sm text-[#63756d]" role="status">Loading details...</p> : error && !item ? <p className="mt-6 text-sm text-red-700" role="alert">{error}</p> : item && <>
           <header className="mt-6 flex flex-wrap items-start justify-between gap-4 border-b border-[#d8ddd5] pb-6">
             <div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#a75a3b]">{resource.title}</p><h1 className="mt-2 font-display text-3xl font-semibold sm:text-4xl">{item.courseTitle}</h1><p className="mt-2 text-sm text-[#63756d]">{resource.subtitle(item)}</p></div>
-            {canManage && <div className="flex gap-2"><Link className="rounded-lg border border-[#cbd4cb] px-3 py-2 text-sm font-semibold hover:bg-[#eff2e9]" to={`/${type}/edit/${item._id}`}>Edit</Link><button className="rounded-lg border border-[#d5a899] px-3 py-2 text-sm font-semibold text-[#8b3c2a] hover:bg-[#fbefea] disabled:opacity-60" disabled={deleting} onClick={deleteItem} type="button">{deleting ? "Deleting..." : "Delete"}</button></div>}
+            {canManage && <div className="flex gap-2"><Link className="rounded-lg border border-[#cbd4cb] px-3 py-2 text-sm font-semibold hover:bg-[#eff2e9]" to={`/${type}/edit/${item._id}`}>Edit</Link><button className="rounded-lg border border-[#d5a899] px-3 py-2 text-sm font-semibold text-[#8b3c2a] hover:bg-[#fbefea] disabled:opacity-60" disabled={deleting} onClick={() => setConfirmDelete(true)} type="button">Delete</button></div>}
           </header>
 
           <section className="mt-6 rounded-2xl border border-[#d8ddd5] bg-[#fbfbf8] p-5 sm:p-7" aria-label="Full details">
@@ -316,6 +318,7 @@ export function AcademicDetailPage({ type }) {
           {error && <p className="mt-4 text-sm text-red-700" role="alert">{error}</p>}
           <section className="mt-8" aria-label="Comments"><h2 className="font-display text-2xl font-semibold">Comments</h2><CommentsPanel key={item._id} contentType={type === "routines" ? "routine" : "exam"} contentId={item._id} initiallyOpen /></section>
         </>}
+        {confirmDelete && item && <ConfirmDialog title="Delete this item?" message={`“${item.courseTitle}” will be permanently deleted.`} confirmLabel="Delete" busy={deleting} onCancel={() => setConfirmDelete(false)} onConfirm={deleteItem} />}
       </main>
     </WorkspaceLayout>
   );

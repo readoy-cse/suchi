@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const examSchema = new mongoose.Schema(
   {
     courseTitle: { type: String, required: true, trim: true, maxlength: 120 },
-    courseCode: { type: String, required: true, trim: true, uppercase: true, maxlength: 20 },
+    courseCode: { type: String, trim: true, uppercase: true, maxlength: 20, default: "" },
     examType: { type: String, required: true, trim: true, maxlength: 40 },
     date: { type: Date, required: true },
     startTime: { type: String, required: true },

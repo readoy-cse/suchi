@@ -7,7 +7,7 @@ import { DashboardPage } from "./features/dashboard/DashboardPage.jsx";
 import { NotificationLogsPage } from "./features/notifications/NotificationLogsPage.jsx";
 import { EventsPage, MySubmissionsPage, ReviewQueuePage, SubmissionFormPage } from "./features/submissions/SubmissionPages.jsx";
 import { useAuth } from "./features/auth/useAuth.js";
-import { UsersPage } from "./features/users/UsersPage.jsx";
+import { UserDetailPage, UsersPage } from "./features/users/UsersPage.jsx";
 
 function LoadingPage() {
   return (
@@ -47,12 +47,6 @@ function PublicRoute({ children }) {
   return user ? <Navigate to="/" replace /> : children;
 }
 
-function UsersRoute() {
-  const { user } = useAuth();
-  if (user.role !== "admin") return <Navigate to="/" replace />;
-  return <UsersPage />;
-}
-
 export default function AppShell() {
   return (
     <AuthProvider>
@@ -77,7 +71,8 @@ export default function AppShell() {
         <Route path="/submissions/mine" element={<ProtectedRoute><MySubmissionsPage /></ProtectedRoute>} />
         <Route path="/submissions/review" element={<ProtectedRoute roles={["admin", "cr"]}><ReviewQueuePage /></ProtectedRoute>} />
         <Route path="/notifications" element={<ProtectedRoute roles={["admin", "cr"]}><NotificationLogsPage /></ProtectedRoute>} />
-        <Route path="/users" element={<ProtectedRoute><UsersRoute /></ProtectedRoute>} />
+        <Route path="/users" element={<ProtectedRoute roles={["admin"]}><UsersPage /></ProtectedRoute>} />
+        <Route path="/users/:id" element={<ProtectedRoute roles={["admin"]}><UserDetailPage /></ProtectedRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </AuthProvider>

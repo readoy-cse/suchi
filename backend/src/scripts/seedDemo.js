@@ -26,12 +26,12 @@ const demoRecords = [
   {
     Model: Notice,
     filter: { title: "Suchi Demo: Project clinic" },
-    value: { title: "Suchi Demo: Project clinic", body: "Bring your current project questions to the lab clinic on Thursday.", category: "Academic", attachmentUrl: "" },
+    value: { title: "Suchi Demo: Project clinic", body: "Bring your current project questions to the lab clinic on Thursday.", category: "Academic" },
   },
   {
     Model: Notice,
     filter: { title: "Suchi Demo: Routine update" },
-    value: { title: "Suchi Demo: Routine update", body: "The Wednesday database class meets in Room 304 this week.", category: "Schedule", attachmentUrl: "" },
+    value: { title: "Suchi Demo: Routine update", body: "The Wednesday database class meets in Room 304 this week.", category: "Schedule" },
   },
   {
     Model: Submission,

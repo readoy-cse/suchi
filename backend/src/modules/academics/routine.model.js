@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const routineSchema = new mongoose.Schema(
   {
     courseTitle: { type: String, required: true, trim: true, maxlength: 120 },
-    courseCode: { type: String, required: true, trim: true, uppercase: true, maxlength: 20 },
+    courseCode: { type: String, trim: true, uppercase: true, maxlength: 20, default: "" },
     teacher: { type: String, required: true, trim: true, maxlength: 100 },
     day: { type: String, required: true, enum: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"] },
     startTime: { type: String, required: true },

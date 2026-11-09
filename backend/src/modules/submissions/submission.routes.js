@@ -75,7 +75,10 @@ submissionRouter.get("/pending", requireRole("admin", "cr"), async (_request, re
 });
 
 submissionRouter.get("/published", async (_request, response) => {
-  const items = await Submission.find({ status: "approved" }).sort({ createdAt: -1 }).limit(200);
+  const items = await Submission.find({ status: "approved" })
+    .populate("submittedBy", "name")
+    .sort({ createdAt: -1 })
+    .limit(200);
   return response.json({ items });
 });
 
@@ -86,8 +89,6 @@ submissionRouter.patch("/:id", async (request, response) => {
   if (item.submittedBy.toString() !== request.user._id.toString()) {
     return response.status(403).json({ message: "You can only edit your own submissions." });
   }
-  if (item.status !== "pending") return response.status(409).json({ message: "Only pending submissions can be edited." });
-
   const parsed = submissionSchema.safeParse(request.body);
   if (!parsed.success) return invalidBody(response, parsed);
   Object.assign(item, parsed.data);

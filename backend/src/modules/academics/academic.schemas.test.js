@@ -48,12 +48,11 @@ describe("academic content validation", () => {
     assert.equal(result.success, false);
   });
 
-  it("accepts a notice with a safe optional resource", () => {
+  it("accepts a notice with its required fields", () => {
     const result = noticeSchema.safeParse({
       title: "Library hours updated",
       body: "The library will open at 8 AM this week.",
       category: "Academic",
-      attachmentUrl: "https://example.test/library",
     });
 
     assert.equal(result.success, true);

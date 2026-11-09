@@ -13,7 +13,7 @@ const resourceUrl = z.string().trim().max(2048).refine((value) => {
 
 export const routineSchema = z.object({
   courseTitle: z.string().trim().min(2).max(120),
-  courseCode: z.string().trim().min(2).max(20).transform((value) => value.toUpperCase()),
+  courseCode: z.string().trim().max(20).transform((value) => value.toUpperCase()).optional().default(""),
   teacher: z.string().trim().min(2).max(100),
   day: z.enum(["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]),
   startTime: z.string().regex(timePattern, "Use a valid 24-hour start time."),
@@ -28,7 +28,7 @@ export const routineSchema = z.object({
 
 export const examSchema = z.object({
   courseTitle: z.string().trim().min(2).max(120),
-  courseCode: z.string().trim().min(2).max(20).transform((value) => value.toUpperCase()),
+  courseCode: z.string().trim().max(20).transform((value) => value.toUpperCase()).optional().default(""),
   examType: z.string().trim().min(2).max(40),
   date: z.coerce.date(),
   startTime: z.string().regex(timePattern, "Use a valid 24-hour time."),
@@ -42,5 +42,4 @@ export const noticeSchema = z.object({
   title: z.string().trim().min(3).max(160),
   body: z.string().trim().min(1).max(10000),
   category: z.string().trim().min(2).max(40),
-  attachmentUrl: resourceUrl,
 });
