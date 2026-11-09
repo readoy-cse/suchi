@@ -179,12 +179,6 @@ export function AcademicCollectionPage({ type, mode = "list" }) {
           <span className="text-sm text-[#63756d]">{items.length} {items.length === 1 ? "item" : "items"}</span>
         </div>
 
-        {canManage && !formMode && (
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Link className="inline-flex rounded-lg bg-[#17392f] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#245444] focus:outline-none focus:ring-2 focus:ring-[#a75a3b]" to={`/${type}/create`}>Create {type === "routines" ? "class" : type === "exams" ? "exam" : "notice"}</Link>
-          </div>
-        )}
-
         {canManage && formMode && (
           <form className="mt-8 border-y border-[#d8ddd5] py-6" onSubmit={handleSubmit}>
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">

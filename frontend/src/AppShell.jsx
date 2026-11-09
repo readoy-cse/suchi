@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./features/auth/AuthProvider.jsx";
 import { AuthPage } from "./features/auth/AuthPage.jsx";
+import { AccountPage } from "./features/auth/AccountPage.jsx";
 import { AcademicCollectionPage } from "./features/academics/AcademicCollectionPage.jsx";
 import { DashboardPage } from "./features/dashboard/DashboardPage.jsx";
 import { NotificationLogsPage } from "./features/notifications/NotificationLogsPage.jsx";
@@ -43,6 +44,7 @@ export default function AppShell() {
         <Route path="/login" element={<PublicRoute><AuthPage mode="login" /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><AuthPage mode="register" /></PublicRoute>} />
         <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+        <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
         <Route path="/routines" element={<ProtectedRoute><AcademicCollectionPage type="routines" /></ProtectedRoute>} />
         <Route path="/routines/create" element={<ProtectedRoute roles={["admin", "cr"]}><AcademicCollectionPage type="routines" mode="create" /></ProtectedRoute>} />
         <Route path="/routines/edit/:id" element={<ProtectedRoute roles={["admin", "cr"]}><AcademicCollectionPage type="routines" mode="edit" /></ProtectedRoute>} />

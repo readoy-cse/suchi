@@ -84,18 +84,6 @@ export function DashboardPage() {
           <Link className="rounded-lg bg-[#17392f] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#245444] focus:outline-none focus:ring-2 focus:ring-[#a75a3b]" to="/contribute">Share an update</Link>
         </div>
 
-        {isReviewer && (
-          <section className="mt-6 flex flex-wrap items-center justify-between gap-4 border-y border-[#d8ddd5] py-4" aria-label="Management actions">
-            <div><p className="text-sm font-semibold">Class management</p><p className="mt-1 text-xs text-[#63756d]">Create or update academic information.</p></div>
-            <div className="flex flex-wrap gap-2">
-              <Link className="rounded-lg border border-[#cbd4cb] px-3 py-2 text-sm font-semibold hover:bg-[#eff2e9]" to="/routines/create">Create class</Link>
-              <Link className="rounded-lg border border-[#cbd4cb] px-3 py-2 text-sm font-semibold hover:bg-[#eff2e9]" to="/exams/create">Create exam</Link>
-              <Link className="rounded-lg border border-[#cbd4cb] px-3 py-2 text-sm font-semibold hover:bg-[#eff2e9]" to="/notices/create">Create notice</Link>
-              {user.role === "admin" && <Link className="rounded-lg border border-[#cbd4cb] px-3 py-2 text-sm font-semibold hover:bg-[#eff2e9]" to="/users">Manage users</Link>}
-            </div>
-          </section>
-        )}
-
         {error && <p className="mt-6 text-sm text-red-700" role="alert">Could not load dashboard data: {error}</p>}
         {loading ? <p className="py-12 text-sm text-[#63756d]" role="status">Loading your academic summary...</p> : (
           <>

@@ -1,19 +1,53 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@500;600;700&display=swap");
 @import "tailwindcss";
 
 @theme {
   --font-sans: "DM Sans", sans-serif;
   --font-display: "Manrope", sans-serif;
+  --font-bengali: "Noto Sans Bengali", sans-serif;
 }
 
 html {
   min-width: 320px;
   background: #f4f4ef;
   font-family: var(--font-sans);
+  font-size: 16px;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+  color: #17392f;
+  line-height: 1.55;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+input,
+select,
+textarea {
+  color: #17392f;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #63756d;
+  opacity: 1;
+}
+
+:focus-visible {
+  outline: 3px solid #a75a3b;
+  outline-offset: 2px;
 }
 
 h1,

@@ -49,8 +49,17 @@ export function AuthProvider({ children }) {
     }
   }
 
+  async function updateAccount(details) {
+    const result = await api("/auth/account", {
+      method: "PATCH",
+      body: JSON.stringify(details),
+    });
+    setUser(result.user);
+    return result.user;
+  }
+
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, updateAccount }}>
       {children}
     </AuthContext.Provider>
   );

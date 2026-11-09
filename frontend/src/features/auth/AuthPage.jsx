@@ -36,8 +36,8 @@ export function AuthPage({ mode }) {
     <main className="grid min-h-screen bg-[#f4f4ef] text-[#17392f] md:grid-cols-[minmax(300px,0.82fr)_1.18fr]">
       <aside className="flex flex-col justify-between bg-[#17392f] px-8 py-8 text-[#f4f4ef] sm:px-12 sm:py-12 md:min-h-screen md:px-14 md:py-14">
         <Link className="flex w-fit items-center gap-3" to="/login" aria-label="Suchi home">
-          <span className="flex size-11 items-center justify-center rounded-xl bg-[#d6ef79] text-xl font-extrabold text-[#17392f]">S</span>
-          <span className="text-[15px] font-bold tracking-[0.16em]">SUCHI</span>
+          <span className="font-bengali text-3xl font-bold leading-none tracking-tight text-[#f4f4ef]">সূচি</span>
+          <span aria-hidden="true" className="flex flex-col gap-[3px] pt-1"><i className="h-[2px] w-4 rounded-full bg-[#d6ef79]"/><i className="h-[2px] w-3 rounded-full bg-white/80"/><i className="h-[2px] w-2 rounded-full bg-white/80"/></span>
         </Link>
         <div className="my-12 max-w-sm">
           <p className="mb-4 text-xs font-semibold uppercase tracking-[0.2em] text-[#d6ef79]">Campus, in context</p>
