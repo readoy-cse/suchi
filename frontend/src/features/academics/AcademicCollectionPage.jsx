@@ -216,24 +216,106 @@ export function AcademicCollectionPage({ type, mode = "list" }) {
           <p className="py-10 text-sm text-[#63756d]" role="status">Loading {resource.title.toLowerCase()}...</p>
         ) : items.length === 0 ? (
           <p className="border-b border-[#d8ddd5] py-8 text-sm text-[#63756d]">No published items yet.</p>
+        ) : type === "routines" || type === "exams" ? (
+          <div className="mt-6 overflow-x-auto rounded-xl border border-[#d8ddd5] bg-[#fbfbf8]">
+            <table className="w-full min-w-[560px] border-collapse text-left text-sm">
+              <caption className="sr-only">{resource.title} in table format</caption>
+              <thead className="bg-[#e9eee4] text-xs uppercase tracking-wide text-[#354f45]">
+                <tr><th className="px-4 py-3 font-semibold">Course</th><th className="px-4 py-3 font-semibold">{type === "routines" ? "Day & time" : "Exam date & time"}</th><th className="px-4 py-3 font-semibold">Room</th>{canManage && <th className="px-4 py-3 font-semibold">Actions</th>}</tr>
+              </thead>
+              {items.map((item) => (
+                <tbody className="border-t border-[#d8ddd5]" key={item._id}>
+                  <tr className="cursor-pointer align-middle hover:bg-[#f4f6f0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-[#a75a3b]" onClick={() => navigate(`/${type}/${item._id}`)} onKeyDown={(event) => { if (event.target !== event.currentTarget) return; if (event.key === "Enter" || event.key === " ") { event.preventDefault(); navigate(`/${type}/${item._id}`); } }} tabIndex={0}>
+                    <td className="px-4 py-4"><span className="font-semibold text-[#17392f]">{item.courseTitle}</span></td>
+                    <td className="whitespace-nowrap px-4 py-4">{type === "routines" ? <><span>{item.day}</span><span className="mt-1 block text-xs text-[#63756d]">{item.startTime} - {item.endTime}</span></> : <><span>{new Date(item.date).toLocaleDateString()}</span><span className="mt-1 block text-xs text-[#63756d]">{item.startTime}</span></>}</td>
+                    <td className="px-4 py-4">{item.room}</td>
+                    {canManage && <td className="px-4 py-4"><div className="flex items-center gap-2" onClick={(event) => event.stopPropagation()}><Link aria-label={`Edit ${item.courseTitle}`} className="rounded-md border border-[#cbd4cb] px-2.5 py-1.5 text-xs font-semibold hover:bg-[#eff2e9]" to={`/${type}/edit/${item._id}`}>Edit</Link><button aria-label={`Delete ${item.courseTitle}`} className="rounded-md border border-[#d5a899] px-2.5 py-1.5 text-xs font-semibold text-[#8b3c2a] hover:bg-[#fbefea]" type="button" onClick={() => deleteItem(item)}>Delete</button></div></td>}
+                  </tr>
+                </tbody>
+              ))}
+            </table>
+          </div>
         ) : (
           <div className="divide-y divide-[#d8ddd5]">
             {items.map((item) => (
               <article className="py-6" key={item._id}>
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
-                    <h2 className="text-lg font-semibold">{item.courseTitle ?? item.title}</h2>
+                    <h2 className="text-lg font-semibold">{item.title}</h2>
                     <p className="mt-1 text-xs font-medium text-[#849189]">{resource.subtitle(item)}</p>
                     {resource.detail(item) && <p className="mt-3 whitespace-pre-line text-sm leading-6 text-[#354f45]">{resource.detail(item)}</p>}
                     {resource.link(item) && <a className="mt-3 inline-block text-sm font-semibold text-[#245444] underline underline-offset-4" href={resource.link(item)} target="_blank" rel="noreferrer">{resource.linkLabel}</a>}
                   </div>
                   {canManage && <div className="flex shrink-0 gap-2"><Link className="rounded-md border border-[#cbd4cb] px-3 py-2 text-xs font-semibold hover:bg-[#eff2e9]" to={`/${type}/edit/${item._id}`}>Edit</Link><button className="rounded-md border border-[#d5a899] px-3 py-2 text-xs font-semibold text-[#8b3c2a] hover:bg-[#fbefea]" type="button" onClick={() => deleteItem(item)}>Delete</button></div>}
                 </div>
-                <CommentsPanel contentType={type === "routines" ? "routine" : type === "exams" ? "exam" : "notice"} contentId={item._id} />
+                <CommentsPanel contentType="notice" contentId={item._id} />
               </article>
             ))}
           </div>
         ))}
+      </main>
+    </WorkspaceLayout>
+  );
+}
+
+export function AcademicDetailPage({ type }) {
+  const resource = resources[type];
+  const { user } = useAuth();
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [item, setItem] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const canManage = user.role === "admin" || user.role === "cr";
+
+  useEffect(() => {
+    let active = true;
+    api(`/${type}/${id}`)
+      .then(({ item: record }) => { if (active) setItem(record); })
+      .catch((loadError) => { if (active) setError(loadError.message); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [id, type]);
+
+  async function deleteItem() {
+    if (!window.confirm(`Delete “${item.courseTitle}”? This cannot be undone.`)) return;
+    setDeleting(true);
+    setError("");
+    try {
+      await api(`/${type}/${item._id}`, { method: "DELETE" });
+      navigate(`/${type}`, { replace: true });
+    } catch (deleteError) {
+      setError(deleteError.message);
+      setDeleting(false);
+    }
+  }
+
+  return (
+    <WorkspaceLayout>
+      <main className="mx-auto max-w-4xl px-5 py-9 sm:px-8 sm:py-12">
+        <Link className="text-sm font-semibold text-[#245444] underline underline-offset-4" to={`/${type}`}>Back to {resource.title.toLowerCase()}</Link>
+        {loading ? <p className="py-12 text-sm text-[#63756d]" role="status">Loading details...</p> : error && !item ? <p className="mt-6 text-sm text-red-700" role="alert">{error}</p> : item && <>
+          <header className="mt-6 flex flex-wrap items-start justify-between gap-4 border-b border-[#d8ddd5] pb-6">
+            <div><p className="text-xs font-semibold uppercase tracking-[0.16em] text-[#a75a3b]">{resource.title}</p><h1 className="mt-2 font-display text-3xl font-semibold sm:text-4xl">{item.courseTitle}</h1><p className="mt-2 text-sm text-[#63756d]">{resource.subtitle(item)}</p></div>
+            {canManage && <div className="flex gap-2"><Link className="rounded-lg border border-[#cbd4cb] px-3 py-2 text-sm font-semibold hover:bg-[#eff2e9]" to={`/${type}/edit/${item._id}`}>Edit</Link><button className="rounded-lg border border-[#d5a899] px-3 py-2 text-sm font-semibold text-[#8b3c2a] hover:bg-[#fbefea] disabled:opacity-60" disabled={deleting} onClick={deleteItem} type="button">{deleting ? "Deleting..." : "Delete"}</button></div>}
+          </header>
+
+          <section className="mt-6 rounded-2xl border border-[#d8ddd5] bg-[#fbfbf8] p-5 sm:p-7" aria-label="Full details">
+            <h2 className="text-lg font-semibold">Full details</h2>
+            <dl className="mt-5 grid gap-x-8 gap-y-5 sm:grid-cols-2">
+              {resource.fields.filter((field) => field.name !== "courseTitle").map((field) => {
+                const rawValue = item[field.name];
+                if (rawValue === undefined || rawValue === null || rawValue === "" || (Array.isArray(rawValue) && rawValue.length === 0)) return null;
+                const value = Array.isArray(rawValue) ? rawValue.join("\n") : rawValue;
+                return <div className={field.type === "textarea" ? "sm:col-span-2" : ""} key={field.name}><dt className="text-xs font-semibold uppercase tracking-wide text-[#63756d]">{field.label}</dt><dd className="mt-1 whitespace-pre-line break-words text-sm leading-6 text-[#17392f]">{field.type === "url" ? <a className="font-semibold text-[#245444] underline underline-offset-4" href={value} target="_blank" rel="noreferrer">{value}</a> : field.type === "date" ? new Date(value).toLocaleDateString() : value}</dd></div>;
+              })}
+            </dl>
+          </section>
+
+          {error && <p className="mt-4 text-sm text-red-700" role="alert">{error}</p>}
+          <section className="mt-8" aria-label="Comments"><h2 className="font-display text-2xl font-semibold">Comments</h2><CommentsPanel key={item._id} contentType={type === "routines" ? "routine" : "exam"} contentId={item._id} initiallyOpen /></section>
+        </>}
       </main>
     </WorkspaceLayout>
   );

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import bcrypt from "bcryptjs";
 import { Router } from "express";
 import { z } from "zod";
 import { requireAuth, requireRole } from "../../middleware/auth.js";
@@ -8,6 +9,7 @@ export const userRouter = Router();
 
 const roleSchema = z.object({ role: z.enum(["admin", "cr", "student"]) });
 const statusSchema = z.object({ isActive: z.boolean() });
+const passwordSchema = z.object({ password: z.string().min(8).max(72) });
 
 function validId(id) {
   return mongoose.isValidObjectId(id);
@@ -63,4 +65,19 @@ userRouter.patch("/:id/status", async (request, response) => {
   user.isActive = parsed.data.isActive;
   await user.save();
   return response.json({ user: publicUser(user) });
+});
+
+userRouter.patch("/:id/password", async (request, response) => {
+  if (!validId(request.params.id)) return response.status(400).json({ message: "Invalid user id." });
+  const parsed = passwordSchema.safeParse(request.body);
+  if (!parsed.success) return response.status(400).json({ message: "Password must be at least 8 characters." });
+  if (Buffer.byteLength(parsed.data.password, "utf8") > 72) {
+    return response.status(400).json({ message: "Password must be at most 72 bytes." });
+  }
+
+  const user = await User.findById(request.params.id);
+  if (!user) return response.status(404).json({ message: "User not found." });
+  user.passwordHash = await bcrypt.hash(parsed.data.password, 12);
+  await user.save();
+  return response.json({ message: "User password updated." });
 });

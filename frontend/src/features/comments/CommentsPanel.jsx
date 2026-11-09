@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../auth/useAuth.js";
 import { api } from "../../lib/api.js";
 
-export function CommentsPanel({ contentType, contentId }) {
+export function CommentsPanel({ contentType, contentId, initiallyOpen = false }) {
   const { user } = useAuth();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(initiallyOpen);
   const [comments, setComments] = useState([]);
   const [body, setBody] = useState("");
   const [loading, setLoading] = useState(false);

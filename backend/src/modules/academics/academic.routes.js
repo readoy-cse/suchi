@@ -12,6 +12,13 @@ export function createAcademicRouter({ Model, schema, sort, contentType, path })
     return response.json({ items });
   });
 
+  router.get("/:id", requireAuth, async (request, response) => {
+    if (!mongoose.isValidObjectId(request.params.id)) return response.status(400).json({ message: "Invalid content id." });
+    const item = await Model.findById(request.params.id);
+    if (!item) return response.status(404).json({ message: "Content not found." });
+    return response.json({ item });
+  });
+
   router.post("/", ...canManage, async (request, response) => {
     const parsed = schema.safeParse(request.body);
     if (!parsed.success) {
