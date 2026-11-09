@@ -7,12 +7,13 @@ let temporaryDevelopmentSecret;
 
 export function getJwtSecret() {
   const configuredSecret = process.env.JWT_SECRET;
+  const isPlaceholder = configuredSecret?.trim().toLowerCase().startsWith("replace-with") ?? false;
 
-  if (configuredSecret && configuredSecret.length >= 32) return configuredSecret;
+  if (configuredSecret && configuredSecret.length >= 32 && !isPlaceholder) return configuredSecret;
   if (process.env.NODE_ENV === "production") {
-    throw new Error("JWT_SECRET must be set to at least 32 characters in production.");
+    throw new Error("JWT_SECRET must be a non-placeholder random value of at least 32 characters in production.");
   }
-  if (configuredSecret) {
+  if (configuredSecret && !isPlaceholder) {
     throw new Error("JWT_SECRET must be at least 32 characters.");
   }
 

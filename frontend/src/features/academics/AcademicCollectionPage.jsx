@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { WorkspaceLayout } from "../../layouts/WorkspaceLayout.jsx";
 import { useAuth } from "../auth/useAuth.js";
 import { CommentsPanel } from "../comments/CommentsPanel.jsx";
@@ -81,10 +82,13 @@ function submissionValues(values) {
   }));
 }
 
-export function AcademicCollectionPage({ type }) {
+export function AcademicCollectionPage({ type, mode = "list" }) {
   const resource = resources[type];
   const { user } = useAuth();
+  const navigate = useNavigate();
+  const { id } = useParams();
   const canManage = user.role === "admin" || user.role === "cr";
+  const formMode = mode === "create" || mode === "edit";
   const [items, setItems] = useState([]);
   const [values, setValues] = useState(() => emptyValues(resource.fields));
   const [editingId, setEditingId] = useState(null);
@@ -110,6 +114,17 @@ export function AcademicCollectionPage({ type }) {
     };
   }, [type]);
 
+  useEffect(() => {
+    if (mode !== "edit" || loading) return;
+    const item = items.find((record) => record._id === id);
+    if (!item) {
+      setError("This item could not be found.");
+      return;
+    }
+    setEditingId(item._id);
+    setValues(editValues(resource.fields, item));
+  }, [id, items, loading, mode, resource.fields]);
+
   function resetForm() {
     setValues(emptyValues(resource.fields));
     setEditingId(null);
@@ -130,6 +145,7 @@ export function AcademicCollectionPage({ type }) {
       setItems((current) => editingId ? current.map((record) => record._id === item._id ? item : record) : [item, ...current]);
       setNotice(editingId ? "Update saved." : "Published successfully.");
       resetForm();
+      navigate(`/${type}`);
     } catch (saveError) {
       setError(saveError.message);
     } finally {
@@ -163,9 +179,18 @@ export function AcademicCollectionPage({ type }) {
           <span className="text-sm text-[#63756d]">{items.length} {items.length === 1 ? "item" : "items"}</span>
         </div>
 
-        {canManage && (
+        {canManage && !formMode && (
+          <div className="mt-6 flex flex-wrap gap-3">
+            <Link className="inline-flex rounded-lg bg-[#17392f] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#245444] focus:outline-none focus:ring-2 focus:ring-[#a75a3b]" to={`/${type}/create`}>Create {type === "routines" ? "class" : type === "exams" ? "exam" : "notice"}</Link>
+          </div>
+        )}
+
+        {canManage && formMode && (
           <form className="mt-8 border-y border-[#d8ddd5] py-6" onSubmit={handleSubmit}>
-            <h2 className="text-lg font-semibold">{editingId ? "Edit item" : `Add ${type === "routines" ? "class" : type === "exams" ? "exam" : "notice"}`}</h2>
+            <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+              <h2 className="text-lg font-semibold">{mode === "edit" ? "Edit item" : `Create ${type === "routines" ? "class" : type === "exams" ? "exam" : "notice"}`}</h2>
+              <Link className="text-sm font-semibold text-[#245444] underline underline-offset-4" to={`/${type}`}>Back to {resource.title.toLowerCase()}</Link>
+            </div>
             <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {resource.fields.map((field) => (
                 <div className={field.type === "textarea" ? "sm:col-span-2 lg:col-span-3" : ""} key={field.name}>
@@ -187,13 +212,13 @@ export function AcademicCollectionPage({ type }) {
             {notice && <p className="mt-4 text-sm text-[#245444]" role="status">{notice}</p>}
             <div className="mt-5 flex flex-wrap gap-3">
               <button className="rounded-lg bg-[#17392f] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#245444] focus:outline-none focus:ring-2 focus:ring-[#a75a3b] disabled:opacity-60" type="submit" disabled={saving}>{saving ? "Saving..." : editingId ? "Save changes" : "Publish"}</button>
-              {editingId && <button className="rounded-lg border border-[#cbd4cb] px-4 py-2.5 text-sm font-semibold hover:bg-[#eff2e9]" type="button" onClick={resetForm}>Cancel edit</button>}
+              {mode === "edit" && <Link className="rounded-lg border border-[#cbd4cb] px-4 py-2.5 text-sm font-semibold hover:bg-[#eff2e9]" to={`/${type}`}>Cancel edit</Link>}
             </div>
           </form>
         )}
 
         {error && !canManage && <p className="mt-6 text-sm text-red-700" role="alert">{error}</p>}
-        {loading ? (
+        {!formMode && (loading ? (
           <p className="py-10 text-sm text-[#63756d]" role="status">Loading {resource.title.toLowerCase()}...</p>
         ) : items.length === 0 ? (
           <p className="border-b border-[#d8ddd5] py-8 text-sm text-[#63756d]">No published items yet.</p>
@@ -208,13 +233,13 @@ export function AcademicCollectionPage({ type }) {
                     {resource.detail(item) && <p className="mt-3 whitespace-pre-line text-sm leading-6 text-[#354f45]">{resource.detail(item)}</p>}
                     {resource.link(item) && <a className="mt-3 inline-block text-sm font-semibold text-[#245444] underline underline-offset-4" href={resource.link(item)} target="_blank" rel="noreferrer">{resource.linkLabel}</a>}
                   </div>
-                  {canManage && <div className="flex shrink-0 gap-2"><button className="rounded-md border border-[#cbd4cb] px-3 py-2 text-xs font-semibold hover:bg-[#eff2e9]" type="button" onClick={() => { setEditingId(item._id); setValues(editValues(resource.fields, item)); window.scrollTo({ top: 0, behavior: "smooth" }); }}>Edit</button><button className="rounded-md border border-[#d5a899] px-3 py-2 text-xs font-semibold text-[#8b3c2a] hover:bg-[#fbefea]" type="button" onClick={() => deleteItem(item)}>Delete</button></div>}
+                  {canManage && <div className="flex shrink-0 gap-2"><Link className="rounded-md border border-[#cbd4cb] px-3 py-2 text-xs font-semibold hover:bg-[#eff2e9]" to={`/${type}/edit/${item._id}`}>Edit</Link><button className="rounded-md border border-[#d5a899] px-3 py-2 text-xs font-semibold text-[#8b3c2a] hover:bg-[#fbefea]" type="button" onClick={() => deleteItem(item)}>Delete</button></div>}
                 </div>
                 <CommentsPanel contentType={type === "routines" ? "routine" : type === "exams" ? "exam" : "notice"} contentId={item._id} />
               </article>
             ))}
           </div>
-        )}
+        ))}
       </main>
     </WorkspaceLayout>
   );

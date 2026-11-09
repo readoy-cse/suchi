@@ -66,7 +66,7 @@ async function seedDemo() {
       : { ...record.value, createdBy: admin._id };
     const result = await record.Model.updateOne(
       record.filter,
-      { $setOnInsert: { ...values, createdAt: new Date(), updatedAt: new Date() } },
+      { $setOnInsert: values },
       { upsert: true },
     );
     inserted += result.upsertedCount;
