@@ -59,7 +59,7 @@ submissionRouter.post("/", async (request, response) => {
   });
 
   const notification = isReviewer
-    ? await notifyPublishedContent({ contentType: "submission", contentId: item._id, title: item.title, path: "/events" })
+    ? await notifyPublishedContent({ contentType: "submission", contentId: item._id, title: item.title, path: "/events", actorName: request.user.name, details: item })
     : { status: "pending" };
   return response.status(201).json({ item, notification });
 });
@@ -123,7 +123,7 @@ submissionRouter.patch("/:id/review", requireRole("admin", "cr"), async (request
   item.reviewedAt = new Date();
   await item.save();
   const notification = item.status === "approved"
-    ? await notifyPublishedContent({ contentType: "submission", contentId: item._id, title: item.title, path: "/events" })
+    ? await notifyPublishedContent({ contentType: "submission", contentId: item._id, title: item.title, path: "/events", actorName: request.user.name, details: item })
     : { status: "not-sent" };
   return response.json({ item, notification });
 });

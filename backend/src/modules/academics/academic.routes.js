@@ -26,7 +26,7 @@ export function createAcademicRouter({ Model, schema, sort, contentType, path })
     }
 
     const item = await Model.create({ ...parsed.data, createdBy: request.user._id });
-    const notification = await notifyPublishedContent({ contentType, contentId: item._id, title: item.courseTitle ?? item.title, path });
+    const notification = await notifyPublishedContent({ contentType, contentId: item._id, title: item.courseTitle ?? item.title, path, actorName: request.user.name, details: item });
     return response.status(201).json({ item, notification });
   });
 
@@ -41,7 +41,7 @@ export function createAcademicRouter({ Model, schema, sort, contentType, path })
     if (!item) return response.status(404).json({ message: "Content not found." });
     Object.assign(item, parsed.data);
     await item.save();
-    const notification = await notifyPublishedContent({ contentType, contentId: item._id, title: item.courseTitle ?? item.title, path });
+    const notification = await notifyPublishedContent({ contentType, contentId: item._id, title: item.courseTitle ?? item.title, path, action: "updated", actorName: request.user.name, details: item });
     return response.json({ item, notification });
   });
 
