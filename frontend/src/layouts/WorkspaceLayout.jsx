@@ -23,6 +23,7 @@ export function WorkspaceLayout({ children }) {
   const navClass = ({ isActive }) => `shrink-0 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a75a3b] ${isActive ? "bg-[#17392f] text-white" : "text-[#354f45] hover:bg-[#eff2e9] hover:text-[#17392f]"}`;
 
   const canManage = user.role === "admin" || user.role === "cr";
+  const profileInitial = user.name?.trim().charAt(0).toLocaleUpperCase() || "?";
 
   function closeManageMenu() { setManageOpen(false); }
 
@@ -52,7 +53,7 @@ export function WorkspaceLayout({ children }) {
             {canManage && (
               <>
                 <button aria-expanded={manageOpen} aria-haspopup="true" className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold hover:bg-[#eff2e9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a75a3b] ${manageOpen ? "bg-[#eff2e9] text-[#17392f]" : "text-[#354f45]"}`} onClick={(event) => { positionMenu(event, 224, user.role === "admin" ? 230 : 170); setManageOpen((open) => !open); setProfileOpen(false); }} type="button">
-                  {user.role === "admin" ? "Admin tools" : "CR tools"} <svg aria-hidden="true" className={`transition-transform ${manageOpen ? "rotate-180" : ""}`} fill="none" height="12" viewBox="0 0 12 12" width="12"><path d="m2.5 4.5 3.5 3 3.5-3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"/></svg>
+                  {user.role === "admin" ? "Admin" : "Class Rep"} <svg aria-hidden="true" className={`transition-transform ${manageOpen ? "rotate-180" : ""}`} fill="none" height="12" viewBox="0 0 12 12" width="12"><path d="m2.5 4.5 3.5 3 3.5-3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"/></svg>
                 </button>
                 {manageOpen && <div className="fixed z-[100] w-56 rounded-xl border border-[#d8ddd5] bg-[#fbfbf8] p-2 shadow-xl" style={menuPosition}>
                   <p className="px-3 pb-1 pt-2 text-xs font-semibold uppercase tracking-wide text-[#63756d]">Create new</p>
@@ -63,8 +64,8 @@ export function WorkspaceLayout({ children }) {
                 </div>}
               </>
             )}
-            <button aria-label="Open profile menu" aria-expanded={profileOpen} aria-haspopup="true" className="grid size-10 shrink-0 place-items-center rounded-full border border-[#cbd4cb] bg-white text-[#17392f] hover:bg-[#eff2e9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a75a3b]" type="button" onClick={(event) => { positionMenu(event, 240, 150); setProfileOpen((open) => !open); setManageOpen(false); }}>
-              <svg aria-hidden="true" fill="none" height="20" viewBox="0 0 24 24" width="20"><circle cx="12" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.8"/><path d="M4.5 20c.8-3.6 3.4-5.5 7.5-5.5s6.7 1.9 7.5 5.5" stroke="currentColor" strokeLinecap="round" strokeWidth="1.8"/></svg>
+            <button aria-label={`Open ${user.name}'s profile menu`} aria-expanded={profileOpen} aria-haspopup="true" className="grid size-10 shrink-0 place-items-center rounded-full border border-[#cbd4cb] bg-white text-sm font-bold text-[#17392f] hover:bg-[#eff2e9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a75a3b]" type="button" onClick={(event) => { positionMenu(event, 240, 150); setProfileOpen((open) => !open); setManageOpen(false); }}>
+              {profileInitial}
             </button>
             {profileOpen && <div className="fixed z-[100] w-60 rounded-xl border border-[#d8ddd5] bg-[#fbfbf8] p-2 shadow-xl" style={menuPosition}>
               <div className="border-b border-[#e3e6df] px-3 py-2"><p className="truncate text-sm font-semibold">{user.name}</p><p className="truncate text-xs text-[#63756d]">{user.email}</p></div>

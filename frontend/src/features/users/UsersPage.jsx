@@ -5,6 +5,12 @@ import { ConfirmDialog } from "../../components/ConfirmDialog.jsx";
 import { api } from "../../lib/api.js";
 
 const roles = ["student", "cr", "admin"];
+const roleLabels = { student: "Student", cr: "Class representative", admin: "Administrator" };
+const roleStyles = {
+  student: "border-[#cbd8e8] bg-[#edf3fb] text-[#345a83]",
+  cr: "border-[#e8d6a6] bg-[#fbf4df] text-[#795c18]",
+  admin: "border-[#d8c9e8] bg-[#f3edf9] text-[#67458a]",
+};
 
 export function UsersPage() {
   const [users, setUsers] = useState([]);
@@ -32,22 +38,27 @@ export function UsersPage() {
         <p className="mt-2 text-sm leading-6 text-[#63756d]">Search accounts and select a user to manage their details.</p>
 
         {error && <p className="mt-5 rounded-lg border border-[#e4b7aa] bg-[#fbefea] px-4 py-3 text-sm text-[#8b3c2a]" role="alert">{error}</p>}
-        <div className="mt-7 overflow-hidden rounded-2xl border border-[#d8ddd5] bg-[#fbfbf8] shadow-[0_12px_40px_-32px_rgba(23,57,47,0.4)]">
-          <div className="flex flex-wrap items-end justify-between gap-4 border-b border-[#e3e6df] p-4 sm:p-5">
+        <div className="mt-7 overflow-hidden rounded-2xl border border-[#d8ddd5] bg-white">
+          <div className="flex flex-wrap items-center justify-between gap-4 bg-[#eaf0e8] p-4 sm:px-6 sm:py-5">
             <div><h2 className="text-base font-semibold">All accounts</h2><p className="mt-1 text-xs text-[#63756d]">Choose an account to view or manage it.</p>{!loading && <p className="mt-1 text-xs font-medium text-[#245444]">{filteredUsers.length} {filteredUsers.length === 1 ? "account" : "accounts"}{search && ` matching “${search}”`}</p>}</div>
             <div className="relative w-full sm:max-w-sm">
               <label className="sr-only" htmlFor="user-search">Search users</label>
               <svg aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#849189]" fill="none" height="18" viewBox="0 0 24 24" width="18"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" strokeWidth="1.7"/><path d="m16 16 4.5 4.5" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7"/></svg>
-              <input className="w-full rounded-xl border border-[#cbd4cb] bg-white py-3 pl-10 pr-3.5 text-sm outline-none focus:border-[#45835e] focus:ring-2 focus:ring-[#45835e]/20" id="user-search" placeholder="Search name or email" type="search" value={search} onChange={(event) => setSearch(event.target.value)} />
+              <input className="w-full rounded-lg border border-[#cbd4cb] bg-white py-2.5 pl-10 pr-3.5 text-sm outline-none focus:border-[#45835e] focus:ring-2 focus:ring-[#45835e]/20" id="user-search" placeholder="Search by name or email" type="search" value={search} onChange={(event) => setSearch(event.target.value)} />
             </div>
           </div>
+          {!loading && !error && <div className="flex items-center justify-between border-b border-[#e7eae4] px-4 py-3 text-xs text-[#63756d] sm:px-6"><span>{search ? "Search results" : "All users"}</span><span className="font-semibold text-[#354f45]">{filteredUsers.length} {filteredUsers.length === 1 ? "user" : "users"}</span></div>}
+          {!loading && filteredUsers.length > 0 && <div aria-hidden="true" className="hidden border-b border-[#e7eae4] bg-[#f8f9f5] px-3 py-2.5 text-[10px] font-bold uppercase tracking-[0.12em] text-[#63756d] md:grid md:grid-cols-[40px_minmax(110px,0.8fr)_minmax(150px,1.4fr)_150px_75px_65px] md:gap-4 sm:px-8"><span /><span>Name</span><span>Email address</span><span>Role</span><span>Status</span><span /></div>}
           {loading ? <p className="p-6 text-sm text-[#63756d]" role="status">Loading users...</p> : filteredUsers.length === 0 ? <p className="p-6 text-sm text-[#63756d]">{users.length ? "No users match that search." : "No user accounts yet."}</p> : (
-            <ul className="grid grid-cols-1 gap-3 p-4 sm:p-5">
+            <ul className="divide-y divide-[#e7eae4] px-3 sm:px-5">
               {filteredUsers.map((user) => <li key={user.id}>
-                <Link className="group flex h-full items-center gap-3 rounded-xl border border-[#e3e6df] bg-white p-4 transition-all hover:-translate-y-0.5 hover:border-[#b9c8bb] hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a75a3b]" to={`/users/${user.id}`}>
-                  <span aria-hidden="true" className="grid size-11 shrink-0 place-items-center rounded-full bg-[#e9eee4] font-display text-base font-bold text-[#245444]">{user.name.trim().charAt(0).toUpperCase()}</span>
-                  <span className="min-w-0 flex-1"><span className="block truncate text-sm font-semibold text-[#17392f]">{user.name}</span><span className="mt-1 block truncate text-xs text-[#63756d]">{user.email}</span><span className="mt-2 flex items-center gap-2"><span className="text-[10px] font-bold uppercase tracking-wide text-[#63756d]">{user.role}</span><span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${user.isActive ? "bg-[#e9eee4] text-[#245444]" : "bg-[#fbefea] text-[#8b3c2a]"}`}>{user.isActive ? "Active" : "Inactive"}</span></span></span>
-                  <svg aria-hidden="true" className="shrink-0 text-[#849189] transition-transform group-hover:translate-x-0.5 group-hover:text-[#17392f]" fill="none" height="18" viewBox="0 0 24 24" width="18"><path d="m9 18 6-6-6-6" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8"/></svg>
+                <Link className="group flex min-h-[76px] flex-wrap items-center gap-3 rounded-lg px-2 py-3 transition-colors hover:bg-[#f5f7f2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#a75a3b] sm:gap-4 sm:px-3 md:grid md:grid-cols-[40px_minmax(110px,0.8fr)_minmax(150px,1.4fr)_150px_75px_65px] md:gap-4" to={`/users/${user.id}`}>
+                  <span aria-hidden="true" className="grid size-10 shrink-0 place-items-center rounded-xl bg-[#17392f] text-sm font-bold text-white">{user.name.trim().charAt(0).toUpperCase()}</span>
+                  <span className="max-w-48 truncate text-sm font-semibold text-[#17392f] md:max-w-none"><span className="mr-1 text-[10px] font-medium text-[#849189] md:hidden">Name</span>{user.name}</span>
+                  <span className="min-w-36 flex-1 truncate text-xs text-[#63756d] md:min-w-0"><span className="mr-1 text-[10px] font-medium text-[#849189] md:hidden">Email</span>{user.email}</span>
+                  <span className={`inline-flex w-fit items-center rounded-full border px-2.5 py-1 text-xs font-bold ${roleStyles[user.role] ?? "border-[#d8ddd5] bg-[#f4f4ef] text-[#354f45]"}`}><span className="mr-1 font-medium md:hidden">Role:</span>{roleLabels[user.role] ?? user.role}</span>
+                  <span className={`rounded-full px-2 py-0.5 text-center text-[11px] font-semibold ${user.isActive ? "bg-[#e9eee4] text-[#245444]" : "bg-[#fbefea] text-[#8b3c2a]"}`}><span className="mr-1 font-medium md:hidden">Status:</span>{user.isActive ? "Active" : "Inactive"}</span>
+                  <span className="shrink-0 text-xs font-semibold text-[#63756d] group-hover:text-[#17392f]">Manage <span aria-hidden="true">→</span></span>
                 </Link>
               </li>)}
             </ul>
