@@ -10,47 +10,84 @@ Suchi is an academic information and communication platform built with a JavaScr
 - npm 10 or newer
 - MongoDB running locally, or a MongoDB connection URI
 
-## Setup
+## Quick Start
 
-Install both workspaces from the project root:
+### 1. Install Dependencies
+Run from the project root (this installs packages for the root, frontend, and backend workspaces):
 
 ```bash
 npm install
 ```
 
-If `backend/.env` does not exist, copy `backend/.env.example` to that path. Set `MONGODB_URI` to a reachable database; the example URI is `mongodb://127.0.0.1:27017/suchi`. Set `JWT_SECRET` to a random value of at least 32 characters. Set `ADMIN_NAME`, `ADMIN_EMAIL`, and a strong `ADMIN_PASSWORD` of at least 12 characters for the initial admin.
+### 2. Environment Configuration
+- **Backend**: Ensure `backend/.env` exists (copy `backend/.env.example` if starting fresh). Set:
+  - `MONGODB_URI`: Your MongoDB connection string (local or MongoDB Atlas).
+  - `JWT_SECRET`: A secure random string (at least 32 characters).
+  - `PORT`: (Default `4000`) Express server port.
+  - `CLIENT_ORIGIN`: (Default `http://localhost:5173`) Allowed frontend origin for CORS.
+- **Frontend**: No configuration required! Vite dev server automatically proxies all `/api` requests to `http://localhost:4000`.
 
-After MongoDB is running, create the first admin once:
+### 3. Seed Initial Admin (Fresh Database Only)
+If starting with a brand new, empty database, create the initial administrator account:
 
 ```bash
 npm run seed:admin --workspace backend
 ```
 
-Public registration always creates a student account. The seed command refuses to run if an active admin already exists.
+> [!NOTE]
+> If your database already has an active admin user (e.g., when connecting to the existing cloud database), this command will be skipped automatically as only one initial seed admin is allowed.
 
-## Run separately
+*(Optional)* For sample routines, exams, notices, and submissions:
+```bash
+npm run seed:demo --workspace backend
+```
+The seed is idempotent and leaves existing records unchanged. See [Docs/demo-script.md](Docs/demo-script.md) for a walkthrough and [Docs/api.md](Docs/api.md) for endpoint details.
 
-Open two terminals from the project root.
+---
 
-Frontend:
+## Running the Application
+
+### Option 1: Run Both Concurrently (Recommended)
+From the project root, launch both frontend and backend together in one terminal:
 
 ```bash
-npm run dev:frontend
+npm run dev
 ```
 
-Backend:
+### Option 2: Run Separately in Two Terminals
+From the project root:
+
+- **Frontend terminal:**
+  ```bash
+  npm run dev:frontend
+  ```
+- **Backend terminal:**
+  ```bash
+  npm run dev:backend
+  ```
+
+---
+
+## Access & Verification
+
+- **Frontend App**: <http://localhost:5173>
+- **Backend API**: <http://localhost:4000>
+- **Health Check**: <http://localhost:4000/api/health> (returns database & service status)
+- **Login / Register**:
+  - Sign in at `/login` with your credentials.
+  - Register new student accounts at `/register`.
+
+---
+
+## Testing & Quality Checks
+
+Run all workspace checks from the root:
 
 ```bash
-npm run dev:backend
+npm run lint         # Run ESLint across all workspaces
+npm test             # Run backend and frontend unit tests
+npm run build        # Build frontend assets for production
 ```
-
-The frontend runs at <http://localhost:5173>; the API runs at <http://localhost:4000>. Vite proxies `/api` requests to the backend. Check `GET /api/health` for service and database status.
-
-Sign in at `/login` or register a student at `/register`. Auth sessions use an HttpOnly, SameSite=Lax cookie; cookies are Secure in production.
-
-Run checks with `npm run lint`, `npm test`, and `npm run build`. The backend reports a clear setup or connection error if MongoDB is unavailable.
-
-For labeled sample routines, exams, notices, and submissions, run `npm run seed:demo --workspace backend` after creating the Admin. The seed is idempotent and leaves existing records unchanged. See [Docs/demo-script.md](Docs/demo-script.md) for a walkthrough and [Docs/api.md](Docs/api.md) for endpoint details.
 
 ## Environment variables
 
