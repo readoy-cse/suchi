@@ -42,6 +42,14 @@ Below are the complete project specifications, architecture details, problem sta
   - Single-entity submission state machine (`pending` -> `approved` / `rejected`); approved submissions immediately publish to the live feed without duplicate records.
   - Resilient notification pipeline: Database persistence occurs first; external Telegram dispatch failure never cancels database transactions, and failure logs are preserved in `NotificationLogs`.
   - Protection against XSS/CSRF via HttpOnly session cookies and Zod payload sanitization.
+- **Brand Identity & Project Theme Colors:**
+  - **Primary / Deep Pine Green (`#17392f`)**: The foundational brand color; used for primary slide titles, key headers, emphasized metrics, and major icons.
+  - **Accent 1 / Warm Terracotta (`#a75a3b`)**: Used for highlight badges, callout cards, active states, pipeline arrows, and warning/attention tags.
+  - **Accent 2 / Electric Lime (`#d6ef79`)**: Used for high-energy accents, success badges, glowing highlights, and selection tags.
+  - **Canvas Background / Warm Parchment (`#f4f4ef`)**: Clean, warm, editorial background that replaces standard harsh white.
+  - **Card Surfaces / Soft Ivory (`#fbfbf8`)**: Elevated module cards, diagrams, and comparison boxes with subtle borders (`#d8ddd5`).
+  - **Secondary Text / Muted Slate-Green (`#63756d` & `#354f45`)**: High-readability secondary labels and descriptions.
+  - **Typography Styling**: `Manrope` for bold display titles, `DM Sans` for body text, and `Noto Sans Bengali` for the project logo wordmark (**সূচি**).
 
 ---
 
@@ -51,9 +59,9 @@ Generate a 12-slide presentation structure tailored for university professors, e
 For **EACH** of the 12 slides, you MUST provide:
 1. **Slide Title & Slide Number**
 2. **Slide Goal / Key Takeaway** (1 sentence summary)
-3. **Recommended Visual Layout** (e.g., 2-column comparison, 3-card metric layout, pipeline flowchart, architecture diagram)
+3. **Recommended Visual Layout & Theme Styling** (e.g., 2-column comparison, 3-card metric layout, pipeline flowchart, architecture diagram; specify exact uses of `#17392f`, `#a75a3b`, `#d6ef79`, and `#f4f4ef` for each slide's backgrounds, cards, and text accents)
 4. **Slide Content** (Bullet points, concise phrases, data highlights — formatted cleanly for presentation slides, not dense walls of text)
-5. **Visual Elements / Diagrams** (Specific instructions on what icon, diagram, mock UI, or flowchart to display)
+5. **Visual Elements / Diagrams** (Specific instructions on what icon, diagram, mock UI, or flowchart to display, incorporating the project color palette)
 6. **Speaker Notes** (A natural, professional 2-3 paragraph presentation script that I can read out loud to the audience during the presentation)
 
 ---
@@ -146,3 +154,4 @@ Produce the complete, fully written slides now with in-depth speaker scripts for
 1. **Focus on the Pain Point:** Start by asking the audience/evaluators: *"How many times have you missed an exam date or class cancellation because it was buried under 500 Messenger stickers?"* This immediately validates the necessity of Suchi.
 2. **Highlight the Approval Workflow:** Emphasize that Suchi is not just a bulletin board, but a **moderated collaboration ecosystem** (Student submits ➔ CR reviews ➔ System publishes & alerts).
 3. **Emphasize Engineering Quality:** Mention that the project features **strict server-side RBAC**, **HttpOnly JWT cookies**, **automated schema validation (Zod)**, and **fault-tolerant asynchronous notification logging**.
+4. **Brand & Visual Consistency:** Style your presentation slides using Suchi's actual color palette: Deep Pine Green (`#17392f`), Warm Terracotta (`#a75a3b`), Electric Lime (`#d6ef79`), and Warm Parchment (`#f4f4ef`). This connects your presentation visually to your live application.
