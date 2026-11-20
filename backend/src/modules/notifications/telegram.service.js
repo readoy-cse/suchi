@@ -1,6 +1,6 @@
 import { NotificationLog } from "./notification.model.js";
 
-function formatTelegramMessage({ contentType, title, path, action, actorName, details }) {
+export function formatTelegramMessage({ contentType, title, path, action, actorName, details }) {
   const updated = action === "updated";
   const subject = String(title ?? "").slice(0, 300);
   const lines = [];
@@ -33,10 +33,21 @@ function formatTelegramMessage({ contentType, title, path, action, actorName, de
   return lines.join("\n");
 }
 
-export async function notifyPublishedContent({ contentType, contentId, title, path, action = "created", actorName, details = {}, fetchImpl = fetch }) {
+async function sendTelegramText({ contentType, contentId, title = "", actorName = "", message, fetchImpl = fetch }) {
   const botToken = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHAT_ID;
-  if (!botToken || !chatId) return { status: "disabled" };
+  if (!botToken || !chatId) {
+    await NotificationLog.create({
+      contentType,
+      contentId,
+      status: "disabled",
+      message,
+      title,
+      actorName,
+      errorMessage: "Telegram bot is not configured.",
+    });
+    return { status: "disabled", errorMessage: "Telegram bot is not configured." };
+  }
 
   let status = "failed";
   let errorMessage = "";
@@ -46,22 +57,44 @@ export async function notifyPublishedContent({ contentType, contentId, title, pa
     const result = await fetchImpl(`https://api.telegram.org/bot${botToken}/sendMessage`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ chat_id: chatId, text: formatTelegramMessage({ contentType, title, path, action, actorName, details }) }),
+      body: JSON.stringify({ chat_id: chatId, text: message }),
       signal: AbortSignal.timeout(5000),
     });
     const payload = await result.json().catch(() => null);
-    if (!result.ok || !payload?.ok) throw new Error("Telegram rejected the message.");
+    if (!result.ok || !payload?.ok) {
+      const telegramDescription = payload?.description;
+      throw new Error(telegramDescription ? `Telegram: ${telegramDescription}` : `Telegram HTTP ${result.status}`);
+    }
     status = "sent";
     sentAt = new Date();
-  } catch {
-    errorMessage = "Telegram delivery failed.";
+  } catch (error) {
+    if (error?.name === "TimeoutError") errorMessage = "Telegram request timed out.";
+    else if (error instanceof Error && error.message) errorMessage = error.message.slice(0, 500);
+    else errorMessage = "Telegram delivery failed.";
   }
 
   try {
-    await NotificationLog.create({ contentType, contentId, status, errorMessage, sentAt });
+    await NotificationLog.create({ contentType, contentId, status, message, title, actorName, errorMessage, sentAt });
   } catch (error) {
     console.error("Could not save Telegram delivery log.", error);
   }
 
   return { status, errorMessage };
+}
+
+export async function notifyPublishedContent({ contentType, contentId, title, path, action = "created", actorName, details = {}, fetchImpl = fetch }) {
+  const message = formatTelegramMessage({ contentType, title, path, action, actorName, details });
+  return sendTelegramText({ contentType, contentId, title, actorName, message, fetchImpl });
+}
+
+export async function resendTelegramMessage(log, fetchImpl = fetch) {
+  if (!log.message) throw new Error("The original Telegram message is not available.");
+  return sendTelegramText({
+    contentType: log.contentType,
+    contentId: log.contentId,
+    title: log.title,
+    actorName: log.actorName,
+    message: log.message,
+    fetchImpl,
+  });
 }

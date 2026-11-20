@@ -8,6 +8,7 @@ export default defineConfig({
     proxy: {
       "/api": {
         target: "https://suchi-yimo.onrender.com",
+        // target: "http://localhost:4000",
         changeOrigin: true,
         secure: true,
       },

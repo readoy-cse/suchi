@@ -56,7 +56,9 @@ export function DashboardPage() {
 
     Promise.all(requests)
       .then(([routines, exams, notices, published, mine, pending = { items: [] }]) => {
-        if (active) setData({ routines: routines.items, exams: exams.items, notices: notices.items, published: published.items, mine: mine.items, pending: pending.items });
+        if (active) {
+          setData({ routines: routines.items, exams: exams.items, notices: notices.items, published: published.items, mine: mine.items, pending: pending.items });
+        }
       })
       .catch((loadError) => { if (active) setError(loadError.message); })
       .finally(() => { if (active) setLoading(false); });
