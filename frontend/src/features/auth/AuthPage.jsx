@@ -21,10 +21,12 @@ export function AuthPage({ mode }) {
     try {
       if (isRegister) {
         await register({ name: values.name, email: values.email, password: values.password });
+        navigate("/telegram-invite", { replace: true, state: { firstSignUp: true } });
+        return;
       } else {
         await login({ email: values.email, password: values.password });
+        navigate("/", { replace: true });
       }
-      navigate("/", { replace: true });
     } catch (submitError) {
       setError(submitError.message);
     } finally {
