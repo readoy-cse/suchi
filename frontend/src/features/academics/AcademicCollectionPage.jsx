@@ -152,7 +152,7 @@ export function AcademicCollectionPage({ type, mode = "list" }) {
       setItems((current) => editingId ? current.map((record) => record._id === item._id ? item : record) : [item, ...current]);
       setNotice(editingId ? "Update saved." : "Published successfully.");
       resetForm();
-      navigate(`/${type}`);
+      navigate(`/${type}`, { replace: true });
     } catch (saveError) {
       setError(saveError.message);
     } finally {

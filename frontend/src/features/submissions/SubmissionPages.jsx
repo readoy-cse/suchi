@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { WorkspaceLayout } from "../../layouts/WorkspaceLayout.jsx";
 import { useAuth } from "../auth/useAuth.js";
 import { CommentsPanel } from "../comments/CommentsPanel.jsx";
@@ -109,6 +109,7 @@ export function EventsPage() {
 
 export function SubmissionFormPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const editId = searchParams.get("edit");
   const [values, setValues] = useState({ title: "", type: "event", description: "", eventDate: "", location: "", resourceUrl: "" });
@@ -148,6 +149,7 @@ export function SubmissionFormPage() {
       });
       setMessage(item.status === "approved" ? "Published successfully." : "Sent for review. You can track its status in My items.");
       if (!editId) setValues({ title: "", type: "event", description: "", eventDate: "", location: "", resourceUrl: "" });
+      navigate(item.status === "approved" ? "/events" : "/submissions/mine", { replace: true });
     } catch (submitError) {
       setError(submitError.message);
     } finally {
