@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./features/auth/AuthProvider.jsx";
 import { AuthPage } from "./features/auth/AuthPage.jsx";
+import { TelegramInvitePage } from "./features/auth/TelegramInvitePage.jsx";
 import { AccountPage } from "./features/auth/AccountPage.jsx";
 import { AcademicCollectionPage, AcademicDetailPage } from "./features/academics/AcademicCollectionPage.jsx";
 import { DashboardPage } from "./features/dashboard/DashboardPage.jsx";
@@ -53,6 +54,7 @@ export default function AppShell() {
       <Routes>
         <Route path="/login" element={<PublicRoute><AuthPage mode="login" /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><AuthPage mode="register" /></PublicRoute>} />
+        <Route path="/telegram-invite" element={<ProtectedRoute><TelegramInvitePage /></ProtectedRoute>} />
         <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
         <Route path="/routines" element={<ProtectedRoute><AcademicCollectionPage type="routines" /></ProtectedRoute>} />
