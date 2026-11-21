@@ -49,13 +49,13 @@ export function TelegramInvitePage() {
       <div aria-hidden="true" className="absolute left-[-8rem] top-[-10rem] size-[26rem] rounded-full bg-[#d6ef79]/30 blur-3xl" />
       <div aria-hidden="true" className="absolute bottom-[-12rem] right-[-8rem] size-[28rem] rounded-full bg-[#a75a3b]/10 blur-3xl" />
 
-      <section className="relative w-full max-w-[850px] overflow-hidden rounded-[28px] border border-white/90 bg-[#fbfbf8] shadow-[0_30px_100px_-48px_rgba(23,57,47,0.58)]">
-        <div className="grid md:grid-cols-[0.82fr_1.18fr]">
-          <aside className="relative hidden min-h-[520px] flex-col justify-between overflow-hidden bg-[#17392f] p-9 text-white md:flex">
+      <section className="relative w-full max-w-[940px] overflow-hidden rounded-[30px] border border-white/90 bg-[#fbfbf8] shadow-[0_30px_100px_-48px_rgba(23,57,47,0.58)]">
+        <div className="grid md:grid-cols-[0.78fr_1.22fr]">
+          <aside className="relative hidden min-h-[560px] flex-col justify-between overflow-hidden bg-[#17392f] p-10 text-white md:flex">
             <div aria-hidden="true" className="absolute -right-20 -top-16 size-64 rounded-full border-[36px] border-[#d6ef79]/10" />
             <div aria-hidden="true" className="absolute -bottom-24 -left-20 size-72 rounded-full bg-[#d6ef79]/10 blur-2xl" />
             <div className="relative flex items-center gap-3">
-              <span className="font-bengali text-3xl font-bold">সূচি</span>
+              <span className="font-bengali text-3xl font-bold">{"\u09b8\u09c2\u099a\u09bf"}</span>
               <span aria-hidden="true" className="flex flex-col gap-[3px]"><i className="h-[2px] w-4 rounded-full bg-[#d6ef79]" /><i className="h-[2px] w-3 rounded-full bg-white/80" /></span>
             </div>
             <div className="relative">
@@ -70,14 +70,14 @@ export function TelegramInvitePage() {
             <p className="relative text-xs text-white/55">Suchi Community</p>
           </aside>
 
-          <div className="flex min-h-[520px] flex-col justify-center p-7 text-center sm:p-10 md:p-12">
+          <div className="flex min-h-[560px] flex-col justify-center p-7 text-left sm:p-10 md:p-12">
             <div className="mx-auto grid size-16 place-items-center rounded-2xl border border-[#d8ddd5] bg-[#f1f4eb] text-[#245444] shadow-sm md:hidden">
               <svg aria-hidden="true" fill="none" height="30" viewBox="0 0 38 38" width="30"><path d="M32.8 7.2 27.7 30c-.4 1.7-1.4 2.1-2.9 1.3l-7.1-5.2-3.4 3.3c-.4.4-.7.7-1.4.7l.5-7.2 13.1-11.8c.6-.5-.1-.8-.9-.3L9.9 21.2l-9.2-2.2c-1.5-.5-1.5-1.5.3-2.2L30.5 5.2c1.3-.5 2.4.3 2.3 2Z" fill="currentColor" /></svg>
             </div>
 
             <p className="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-[#a75a3b] md:mt-0">{firstSignUp ? "Welcome to Suchi" : `Welcome, ${user.name}`}</p>
-            <h1 className="mt-3 font-display text-3xl font-semibold leading-tight sm:text-[40px]">Join our Telegram channel</h1>
-            <p className="mx-auto mt-4 max-w-md text-sm leading-6 text-[#63756d]">Get class routines, exam updates, notices, and community announcements directly in Telegram.</p>
+            <h1 className="mt-3 font-display text-3xl font-semibold leading-tight sm:text-[42px] tracking-[-0.035em]">Join our Telegram channel</h1>
+            <p className="mt-4 max-w-md text-sm leading-6 text-[#63756d]">Get class routines, exam updates, notices, and community announcements directly in Telegram.</p>
 
             {loading ? (
               <div className="mt-8 rounded-2xl border border-[#e1e5dc] bg-[#f8f9f5] px-5 py-6" role="status">
@@ -104,7 +104,7 @@ export function TelegramInvitePage() {
               <p className="mt-8 rounded-xl border border-[#e1e5dc] bg-[#f8f9f5] px-4 py-3 text-sm text-[#63756d]">Invite link is not configured yet.</p>
             )}
 
-            <button className="mx-auto mt-6 rounded-lg px-4 py-2 text-sm font-semibold text-[#63756d] transition hover:bg-[#eff2e9] hover:text-[#17392f]" type="button" onClick={() => navigate("/", { replace: true })}>{firstSignUp ? "Continue to app" : "Back to Suchi"}</button>
+            <button className="mt-6 rounded-lg px-4 py-2 text-sm font-semibold text-[#63756d] transition hover:bg-[#eff2e9] hover:text-[#17392f]" type="button" onClick={() => navigate("/", { replace: true })}>{firstSignUp ? "Continue to app" : "Back to Suchi"}</button>
           </div>
         </div>
       </section>

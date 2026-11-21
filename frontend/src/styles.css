@@ -56,6 +56,10 @@ h2 {
   letter-spacing: 0;
 }
 
+.delivery-message {
+  font-family: "DM Sans", "Noto Sans Bengali", sans-serif;
+}
+
 ::selection {
   background: #d6ef79;
   color: #17392f;
