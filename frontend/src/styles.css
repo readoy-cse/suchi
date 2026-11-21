@@ -6,6 +6,12 @@
   --font-sans: "DM Sans", sans-serif;
   --font-display: "Manrope", sans-serif;
   --font-bengali: "Noto Sans Bengali", sans-serif;
+  --color-suchi-ink: #17392f;
+  --color-suchi-green: #245444;
+  --color-suchi-canvas: #f4f4ef;
+  --color-suchi-surface: #fbfbf8;
+  --color-suchi-lime: #d6ef79;
+  --color-suchi-clay: #a75a3b;
 }
 
 html {
@@ -24,6 +30,20 @@ body {
   margin: 0;
   color: #17392f;
   line-height: 1.55;
+}
+
+.workspace-canvas {
+  background-color: #f4f4ef;
+  background-image:
+    radial-gradient(60% 48% at 12% 0%, rgba(214, 239, 121, 0.2), transparent 72%),
+    radial-gradient(42% 38% at 98% 7%, rgba(167, 90, 59, 0.09), transparent 72%);
+}
+
+.workspace-panel {
+  border: 1px solid rgba(255, 255, 255, 0.76);
+  background: rgba(255, 255, 255, 0.82);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 24px 60px -40px rgba(23, 57, 47, 0.45);
+  backdrop-filter: blur(8px);
 }
 
 button,
@@ -53,11 +73,40 @@ textarea::placeholder {
 h1,
 h2 {
   font-family: var(--font-display);
-  letter-spacing: 0;
+  letter-spacing: -0.025em;
 }
 
 .delivery-message {
   font-family: "DM Sans", "Noto Sans Bengali", sans-serif;
+}
+
+@keyframes dash-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dash-rise {
+  animation: dash-rise 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.dash-grid {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.9) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.9) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse at top right, black 10%, transparent 70%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-rise {
+    animation: none;
+  }
 }
 
 ::selection {

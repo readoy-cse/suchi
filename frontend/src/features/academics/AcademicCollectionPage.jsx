@@ -5,6 +5,7 @@ import { useAuth } from "../auth/useAuth.js";
 import { CommentsPanel } from "../comments/CommentsPanel.jsx";
 import { ConfirmDialog } from "../../components/ConfirmDialog.jsx";
 import { api } from "../../lib/api.js";
+import { getUpcomingClasses, getUpcomingExams, scheduleLabel } from "../dashboard/schedule.utils.js";
 
 const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -95,6 +96,13 @@ export function AcademicCollectionPage({ type, mode = "list" }) {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [now, setNow] = useState(() => new Date());
+
+  useEffect(() => {
+    if (type !== "routines") return undefined;
+    const interval = window.setInterval(() => setNow(new Date()), 60 * 1000);
+    return () => window.clearInterval(interval);
+  }, [type]);
 
   useEffect(() => {
     let active = true;
@@ -167,9 +175,23 @@ export function AcademicCollectionPage({ type, mode = "list" }) {
     }
   }
 
+  const upcomingClasses = type === "routines" ? getUpcomingClasses(items, now) : [];
+  const upcomingExams = type === "exams" ? getUpcomingExams(items, now) : [];
+  const latestItem = [...items].sort((left, right) => new Date(right.publishedAt ?? right.createdAt ?? 0) - new Date(left.publishedAt ?? left.createdAt ?? 0))[0];
+  const overviewItem = type === "routines" ? upcomingClasses[0] : type === "exams" ? upcomingExams[0] : latestItem;
+  const overviewLabel = type === "routines" ? "Up next" : type === "exams" ? "Next exam" : "Latest update";
+  const overviewTitle = type === "routines" || type === "exams" ? overviewItem?.courseTitle : overviewItem?.title;
+  const overviewMeta = type === "routines"
+    ? [overviewItem?.courseCode, overviewItem?.day, overviewItem?.startTime, overviewItem?.room].filter(Boolean).join(" · ")
+    : type === "exams"
+      ? [overviewItem?.examType, overviewItem?.date && new Date(overviewItem.date).toLocaleDateString(), overviewItem?.startTime, overviewItem?.room].filter(Boolean).join(" · ")
+      : [overviewItem?.category, overviewItem?.publishedAt && new Date(overviewItem.publishedAt).toLocaleDateString()].filter(Boolean).join(" · ");
+  const overviewCount = type === "routines" ? upcomingClasses.length : type === "exams" ? upcomingExams.length : items.length;
+  const overviewCountLabel = type === "routines" ? "upcoming classes this week" : type === "exams" ? "upcoming exams" : "published updates";
+
   return (
     <WorkspaceLayout>
-      <main className="mx-auto max-w-7xl px-5 py-9 sm:px-8 sm:py-12">
+      <main className="mx-auto max-w-7xl px-5 py-6 sm:px-8 sm:py-8">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a75a3b]">Academic information</p>
         <div className="mt-3 flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -179,8 +201,31 @@ export function AcademicCollectionPage({ type, mode = "list" }) {
           <span className="text-sm text-[#63756d]">{items.length} {items.length === 1 ? "item" : "items"}</span>
         </div>
 
+        {mode === "list" && (
+          <section className="mt-4 grid gap-2.5 sm:grid-cols-5" aria-label={`${resource.title} overview`}>
+            <div className="relative isolate overflow-hidden rounded-[18px] bg-[#17392f] px-4 py-3.5 text-white shadow-[0_20px_45px_-36px_rgba(23,57,47,0.8)] sm:col-span-3">
+              <div aria-hidden="true" className="absolute -right-5 -top-12 -z-10 size-28 rounded-full border border-white/10" />
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#d6ef79]">{type === "routines" ? "Your week" : type === "exams" ? "On the horizon" : "Class updates"}</p>
+              <p className="mt-1 font-display text-lg font-bold tracking-[-0.03em]">{overviewCount} {overviewCountLabel}</p>
+              <p className="mt-0.5 text-xs text-white/65">{type === "routines" ? "A quick look at your next seven days." : type === "exams" ? "Stay ready for what is coming up." : "The latest from your academic community."}</p>
+            </div>
+            <div className="flex min-w-0 items-center justify-between gap-3 rounded-[18px] border border-[#e2e8de] bg-[#eef7cc] px-4 py-3.5 text-[#17392f] sm:col-span-2">
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#526c3d]">{overviewLabel}</p>
+                {overviewItem ? (
+                  <>
+                    <p className="mt-1 truncate font-display text-base font-bold tracking-[-0.02em]">{overviewTitle}</p>
+                    <p className="mt-0.5 truncate text-xs text-[#526c5d]">{overviewMeta || "Recently published"}</p>
+                  </>
+                ) : <p className="mt-1 font-display text-base font-bold">Nothing to highlight yet.</p>}
+              </div>
+              {overviewItem && (type === "routines" || type === "exams") && <span className="shrink-0 rounded-full bg-[#17392f] px-2.5 py-1 text-[11px] font-bold text-[#d6ef79]">{scheduleLabel(overviewItem, now)}</span>}
+            </div>
+          </section>
+        )}
+
         {canManage && formMode && (
-          <form className="mt-8 border-y border-[#d8ddd5] py-6" onSubmit={handleSubmit}>
+          <form className="workspace-panel mt-6 rounded-[20px] p-5 sm:p-6" onSubmit={handleSubmit}>
             <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
               <h2 className="text-lg font-semibold">{mode === "edit" ? "Edit item" : `Create ${type === "routines" ? "class" : type === "exams" ? "exam" : "notice"}`}</h2>
               <Link className="text-sm font-semibold text-[#245444] underline underline-offset-4" to={`/${type}`}>Back to {resource.title.toLowerCase()}</Link>
@@ -190,14 +235,14 @@ export function AcademicCollectionPage({ type, mode = "list" }) {
                 <div className={field.type === "textarea" ? "sm:col-span-2 lg:col-span-3" : ""} key={field.name}>
                   <label className="mb-1.5 block text-sm font-medium" htmlFor={`${type}-${field.name}`}>{field.label}</label>
                   {field.type === "textarea" ? (
-                    <textarea className="min-h-24 w-full rounded-lg border border-[#cbd4cb] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#45835e] focus:ring-2 focus:ring-[#45835e]/20" id={`${type}-${field.name}`} name={field.name} required={field.required} maxLength={field.name === "body" ? 10000 : 2000} value={values[field.name]} onChange={(event) => setValues((current) => ({ ...current, [field.name]: event.target.value }))} />
+                    <textarea className="min-h-24 w-full rounded-lg border border-[#cbd4cb] bg-white px-3 py-2.5 text-sm outline-none focus:border-[#245444] focus:ring-2 focus:ring-[#245444]/20" id={`${type}-${field.name}`} name={field.name} required={field.required} maxLength={field.name === "body" ? 10000 : 2000} value={values[field.name]} onChange={(event) => setValues((current) => ({ ...current, [field.name]: event.target.value }))} />
                   ) : field.type === "select" ? (
-                    <select className="w-full rounded-lg border border-[#cbd4cb] bg-white px-3 py-3 text-sm outline-none focus:border-[#45835e] focus:ring-2 focus:ring-[#45835e]/20" id={`${type}-${field.name}`} name={field.name} required={field.required} value={values[field.name]} onChange={(event) => setValues((current) => ({ ...current, [field.name]: event.target.value }))}>
+                    <select className="w-full rounded-lg border border-[#cbd4cb] bg-white px-3 py-3 text-sm outline-none focus:border-[#245444] focus:ring-2 focus:ring-[#245444]/20" id={`${type}-${field.name}`} name={field.name} required={field.required} value={values[field.name]} onChange={(event) => setValues((current) => ({ ...current, [field.name]: event.target.value }))}>
                       <option value="">Select {field.label.toLowerCase()}</option>
                       {field.options.map((option) => <option key={option} value={option}>{option}</option>)}
                     </select>
                   ) : (
-                    <input className="w-full rounded-lg border border-[#cbd4cb] bg-white px-3 py-3 text-sm outline-none focus:border-[#45835e] focus:ring-2 focus:ring-[#45835e]/20" id={`${type}-${field.name}`} name={field.name} type={field.type ?? "text"} required={field.required} maxLength={field.type === "url" ? 2048 : undefined} value={values[field.name]} onChange={(event) => setValues((current) => ({ ...current, [field.name]: event.target.value }))} />
+                    <input className="w-full rounded-lg border border-[#cbd4cb] bg-white px-3 py-3 text-sm outline-none focus:border-[#245444] focus:ring-2 focus:ring-[#245444]/20" id={`${type}-${field.name}`} name={field.name} type={field.type ?? "text"} required={field.required} maxLength={field.type === "url" ? 2048 : undefined} value={values[field.name]} onChange={(event) => setValues((current) => ({ ...current, [field.name]: event.target.value }))} />
                   )}
                 </div>
               ))}
@@ -217,7 +262,7 @@ export function AcademicCollectionPage({ type, mode = "list" }) {
         ) : items.length === 0 ? (
           <p className="border-b border-[#d8ddd5] py-8 text-sm text-[#63756d]">No published items yet.</p>
         ) : type === "routines" || type === "exams" ? (
-          <div className="mt-6 overflow-x-auto rounded-xl border border-[#d8ddd5] bg-[#fbfbf8]">
+          <div className="workspace-panel mt-5 overflow-x-auto rounded-[20px]">
             <table className="w-full min-w-[560px] border-collapse text-left text-sm">
               <caption className="sr-only">{resource.title} in table format</caption>
               <thead className="bg-[#e9eee4] text-xs uppercase tracking-wide text-[#354f45]">
@@ -295,7 +340,7 @@ export function AcademicDetailPage({ type }) {
 
   return (
     <WorkspaceLayout>
-      <main className="mx-auto max-w-4xl px-5 py-9 sm:px-8 sm:py-12">
+      <main className="mx-auto max-w-4xl px-5 py-6 sm:px-8 sm:py-8">
         <Link className="text-sm font-semibold text-[#245444] underline underline-offset-4" to={`/${type}`}>Back to {resource.title.toLowerCase()}</Link>
         {loading ? <p className="py-12 text-sm text-[#63756d]" role="status">Loading details...</p> : error && !item ? <p className="mt-6 text-sm text-red-700" role="alert">{error}</p> : item && <>
           <header className="mt-6 flex flex-wrap items-start justify-between gap-4 border-b border-[#d8ddd5] pb-6">

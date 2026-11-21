@@ -81,7 +81,7 @@ export function CommentsPanel({ contentType, contentId, initiallyOpen = false })
           )}
           <form className="mt-4" onSubmit={addComment}>
             <label className="mb-1.5 block text-sm font-medium" htmlFor={`comment-${contentType}-${contentId}`}>Add a comment</label>
-            <textarea className="min-h-20 w-full rounded-lg border border-[#cbd4cb] bg-white p-3 text-sm outline-none focus:border-[#45835e] focus:ring-2 focus:ring-[#45835e]/20" id={`comment-${contentType}-${contentId}`} maxLength={2000} required value={body} onChange={(event) => setBody(event.target.value)} />
+            <textarea className="min-h-20 w-full rounded-lg border border-[#cbd4cb] bg-white p-3 text-sm outline-none focus:border-[#245444] focus:ring-2 focus:ring-[#245444]/20" id={`comment-${contentType}-${contentId}`} maxLength={2000} required value={body} onChange={(event) => setBody(event.target.value)} />
             {error && <p className="mt-2 text-sm text-red-700" role="alert">{error}</p>}
             <button className="mt-2 rounded-lg border border-[#cbd4cb] px-3 py-2 text-sm font-semibold hover:bg-[#eff2e9] disabled:opacity-60" type="submit" disabled={submitting}>{submitting ? "Posting..." : "Post comment"}</button>
           </form>

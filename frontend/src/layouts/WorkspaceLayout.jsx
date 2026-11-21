@@ -37,8 +37,8 @@ export function WorkspaceLayout({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f4ef] text-[#17392f]">
-      <header className="border-b border-[#d8ddd5] bg-[#fbfbf8]">
+    <div className="workspace-canvas min-h-screen text-[#17392f]">
+      <header className="sticky top-0 z-40 border-b border-[#d8ddd5]/80 bg-[#fbfbf8]/90 shadow-[0_4px_18px_-16px_rgba(23,57,47,0.6)] backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-8 sm:py-4">
           <Link className="flex items-center gap-3" to="/" aria-label="Suchi dashboard">
             <span className="font-bengali text-[29px] font-bold leading-none tracking-tight text-[#17392f]">সূচি</span>
