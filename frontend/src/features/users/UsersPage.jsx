@@ -32,19 +32,19 @@ export function UsersPage() {
 
   return (
     <WorkspaceLayout>
-      <main className="mx-auto max-w-5xl px-5 py-9 sm:px-8 sm:py-12">
+      <main className="mx-auto max-w-5xl px-5 py-6 sm:px-8 sm:py-8">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a75a3b]">Administration</p>
         <h1 className="mt-2 font-display text-3xl font-semibold sm:text-4xl">User management</h1>
         <p className="mt-2 text-sm leading-6 text-[#63756d]">Search accounts and select a user to manage their details.</p>
 
         {error && <p className="mt-5 rounded-lg border border-[#e4b7aa] bg-[#fbefea] px-4 py-3 text-sm text-[#8b3c2a]" role="alert">{error}</p>}
-        <div className="mt-7 overflow-hidden rounded-2xl border border-[#d8ddd5] bg-white">
+        <div className="workspace-panel mt-6 overflow-hidden rounded-[20px]">
           <div className="flex flex-wrap items-center justify-between gap-4 bg-[#eaf0e8] p-4 sm:px-6 sm:py-5">
             <div><h2 className="text-base font-semibold">All accounts</h2><p className="mt-1 text-xs text-[#63756d]">Choose an account to view or manage it.</p>{!loading && <p className="mt-1 text-xs font-medium text-[#245444]">{filteredUsers.length} {filteredUsers.length === 1 ? "account" : "accounts"}{search && ` matching “${search}”`}</p>}</div>
             <div className="relative w-full sm:max-w-sm">
               <label className="sr-only" htmlFor="user-search">Search users</label>
               <svg aria-hidden="true" className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#849189]" fill="none" height="18" viewBox="0 0 24 24" width="18"><circle cx="10.8" cy="10.8" r="6.8" stroke="currentColor" strokeWidth="1.7"/><path d="m16 16 4.5 4.5" stroke="currentColor" strokeLinecap="round" strokeWidth="1.7"/></svg>
-              <input className="w-full rounded-lg border border-[#cbd4cb] bg-white py-2.5 pl-10 pr-3.5 text-sm outline-none focus:border-[#45835e] focus:ring-2 focus:ring-[#45835e]/20" id="user-search" placeholder="Search by name or email" type="search" value={search} onChange={(event) => setSearch(event.target.value)} />
+              <input className="w-full rounded-lg border border-[#cbd4cb] bg-white py-2.5 pl-10 pr-3.5 text-sm outline-none focus:border-[#245444] focus:ring-2 focus:ring-[#245444]/20" id="user-search" placeholder="Search by name or email" type="search" value={search} onChange={(event) => setSearch(event.target.value)} />
             </div>
           </div>
           {!loading && !error && <div className="flex items-center justify-between border-b border-[#e7eae4] px-4 py-3 text-xs text-[#63756d] sm:px-6"><span>{search ? "Search results" : "All users"}</span><span className="font-semibold text-[#354f45]">{filteredUsers.length} {filteredUsers.length === 1 ? "user" : "users"}</span></div>}
@@ -135,17 +135,17 @@ export function UserDetailPage() {
 
   return (
     <WorkspaceLayout>
-      <main className="mx-auto max-w-4xl px-5 py-9 sm:px-8 sm:py-12">
+      <main className="mx-auto max-w-4xl px-5 py-6 sm:px-8 sm:py-8">
         <Link className="text-sm font-semibold text-[#245444] underline underline-offset-4" to="/users">Back to user list</Link>
         {error && <p className="mt-5 rounded-lg border border-[#e4b7aa] bg-[#fbefea] px-4 py-3 text-sm text-[#8b3c2a]" role="alert">{error}</p>}
         {message && <p className="mt-5 rounded-lg border border-[#cbd4cb] bg-[#eff2e9] px-4 py-3 text-sm text-[#245444]" role="status">{message}</p>}
         {loading ? <p className="py-12 text-sm text-[#63756d]" role="status">Loading account...</p> : user && <>
-          <header className="mt-6 flex flex-wrap items-start justify-between gap-3 rounded-2xl border border-[#d8ddd5] bg-[#fbfbf8] p-5 sm:p-7">
+          <header className="workspace-panel mt-5 flex flex-wrap items-start justify-between gap-3 rounded-[20px] p-5 sm:p-6">
             <div className="min-w-0"><p className="text-xs font-semibold uppercase tracking-wide text-[#a75a3b]">User details</p><h1 className="mt-1 truncate font-display text-3xl font-semibold">{user.name}</h1><p className="mt-2 break-all text-sm text-[#63756d]">{user.email}</p></div>
             <span className={`rounded-full px-3 py-1 text-xs font-semibold ${user.isActive ? "bg-[#e9eee4] text-[#245444]" : "bg-[#fbefea] text-[#8b3c2a]"}`}>{user.isActive ? "Active account" : "Inactive account"}</span>
           </header>
 
-          <section className="mt-5 rounded-2xl border border-[#d8ddd5] bg-[#fbfbf8] p-5 sm:p-7" aria-label="Account details and settings">
+          <section className="workspace-panel mt-4 rounded-[20px] p-5 sm:p-6" aria-label="Account details and settings">
             <dl className="grid gap-5 border-b border-[#e3e6df] pb-6 sm:grid-cols-2">
               <div><dt className="text-xs font-semibold uppercase tracking-wide text-[#63756d]">Role</dt><dd className="mt-1 text-sm font-semibold">{user.role.toUpperCase()}</dd></div>
               <div><dt className="text-xs font-semibold uppercase tracking-wide text-[#63756d]">Joined</dt><dd className="mt-1 text-sm">{new Date(user.createdAt).toLocaleString()}</dd></div>

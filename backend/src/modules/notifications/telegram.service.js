@@ -1,6 +1,6 @@
 import { NotificationLog } from "./notification.model.js";
 
-export function formatTelegramMessage({ contentType, title, path, action, actorName, details }) {
+export function formatTelegramMessage({ contentType, title, path, action, actorName, authorName, details }) {
   const updated = action === "updated";
   const subject = String(title ?? "").slice(0, 300);
   const lines = [];
@@ -27,9 +27,9 @@ export function formatTelegramMessage({ contentType, title, path, action, actorN
     if (details.location) lines.push(`Location: ${details.location}`);
   }
 
-  lines.push(`Added by: ${actorName || "Suchi user"}`);
+  lines.push(`Added by: ${authorName || actorName || "Suchi user"}`);
   const appUrl = process.env.PUBLIC_APP_URL ?? process.env.CLIENT_ORIGIN ?? "http://localhost:5173";
-  lines.push("", `🔗 Open in Suchi: ${new URL(path, appUrl).toString()}`);
+  lines.push("", `🔗 ${new URL(path, appUrl).toString()}`);
   return lines.join("\n");
 }
 
@@ -82,8 +82,8 @@ async function sendTelegramText({ contentType, contentId, title = "", actorName 
   return { status, errorMessage };
 }
 
-export async function notifyPublishedContent({ contentType, contentId, title, path, action = "created", actorName, details = {}, fetchImpl = fetch }) {
-  const message = formatTelegramMessage({ contentType, title, path, action, actorName, details });
+export async function notifyPublishedContent({ contentType, contentId, title, path, action = "created", actorName, authorName, details = {}, fetchImpl = fetch }) {
+  const message = formatTelegramMessage({ contentType, title, path, action, actorName, authorName, details });
   return sendTelegramText({ contentType, contentId, title, actorName, message, fetchImpl });
 }
 

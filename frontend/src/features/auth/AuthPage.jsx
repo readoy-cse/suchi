@@ -35,7 +35,7 @@ export function AuthPage({ mode }) {
   }
 
   return (
-    <main className="grid min-h-screen bg-[#f4f4ef] text-[#17392f] md:grid-cols-[minmax(300px,0.82fr)_1.18fr]">
+    <main className="workspace-canvas grid min-h-screen text-[#17392f] md:grid-cols-[minmax(300px,0.82fr)_1.18fr]">
       <aside className="flex flex-col justify-between bg-[#17392f] px-8 py-8 text-[#f4f4ef] sm:px-12 sm:py-12 md:min-h-screen md:px-14 md:py-14">
         <Link className="flex w-fit items-center gap-3" to="/login" aria-label="Suchi home">
           <span className="font-bengali text-3xl font-bold leading-none tracking-tight text-[#f4f4ef]">সূচি</span>
@@ -59,16 +59,16 @@ export function AuthPage({ mode }) {
             {isRegister && (
               <div>
                 <label className="mb-1.5 block text-sm font-medium" htmlFor="name">Full name</label>
-                <input className="w-full rounded-lg border border-[#cbd4cb] bg-white px-3.5 py-3 text-sm outline-none focus:border-[#45835e] focus:ring-2 focus:ring-[#45835e]/20" id="name" name="name" autoComplete="name" minLength={2} maxLength={80} required value={values.name} onChange={updateField} />
+                <input className="w-full rounded-lg border border-[#cbd4cb] bg-white px-3.5 py-3 text-sm outline-none focus:border-[#245444] focus:ring-2 focus:ring-[#245444]/20" id="name" name="name" autoComplete="name" minLength={2} maxLength={80} required value={values.name} onChange={updateField} />
               </div>
             )}
             <div>
               <label className="mb-1.5 block text-sm font-medium" htmlFor="email">Email</label>
-              <input className="w-full rounded-lg border border-[#cbd4cb] bg-white px-3.5 py-3 text-sm outline-none focus:border-[#45835e] focus:ring-2 focus:ring-[#45835e]/20" id="email" name="email" type="email" autoComplete="email" maxLength={254} required value={values.email} onChange={updateField} />
+              <input className="w-full rounded-lg border border-[#cbd4cb] bg-white px-3.5 py-3 text-sm outline-none focus:border-[#245444] focus:ring-2 focus:ring-[#245444]/20" id="email" name="email" type="email" autoComplete="email" maxLength={254} required value={values.email} onChange={updateField} />
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-medium" htmlFor="password">Password</label>
-              <input className="w-full rounded-lg border border-[#cbd4cb] bg-white px-3.5 py-3 text-sm outline-none focus:border-[#45835e] focus:ring-2 focus:ring-[#45835e]/20" id="password" name="password" type="password" autoComplete={isRegister ? "new-password" : "current-password"} minLength={isRegister ? 8 : undefined} maxLength={72} required value={values.password} onChange={updateField} />
+              <input className="w-full rounded-lg border border-[#cbd4cb] bg-white px-3.5 py-3 text-sm outline-none focus:border-[#245444] focus:ring-2 focus:ring-[#245444]/20" id="password" name="password" type="password" autoComplete={isRegister ? "new-password" : "current-password"} minLength={isRegister ? 8 : undefined} maxLength={72} required value={values.password} onChange={updateField} />
               {isRegister && <p className="mt-1.5 text-xs text-[#849189]">Use at least 8 characters.</p>}
             </div>
             {error && <p className="text-sm text-red-700" role="alert">{error}</p>}
