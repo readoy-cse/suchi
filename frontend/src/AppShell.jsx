@@ -9,6 +9,7 @@ import { NotificationLogsPage } from "./features/notifications/NotificationLogsP
 import { EventsPage, MySubmissionsPage, ReviewQueuePage, SubmissionFormPage } from "./features/submissions/SubmissionPages.jsx";
 import { useAuth } from "./features/auth/useAuth.js";
 import { UserDetailPage, UsersPage } from "./features/users/UsersPage.jsx";
+import { TeamPage } from "./features/team/TeamPage.jsx";
 
 function LoadingPage() {
   return (
@@ -57,6 +58,7 @@ export default function AppShell() {
         <Route path="/telegram-invite" element={<ProtectedRoute><TelegramInvitePage /></ProtectedRoute>} />
         <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
+        <Route path="/the-people-behind-suchi" element={<ProtectedRoute><TeamPage /></ProtectedRoute>} />
         <Route path="/routines" element={<ProtectedRoute><AcademicCollectionPage type="routines" /></ProtectedRoute>} />
         <Route path="/routines/create" element={<ProtectedRoute roles={["admin", "cr"]}><AcademicCollectionPage type="routines" mode="create" /></ProtectedRoute>} />
         <Route path="/routines/edit/:id" element={<ProtectedRoute roles={["admin", "cr"]}><AcademicCollectionPage type="routines" mode="edit" /></ProtectedRoute>} />
