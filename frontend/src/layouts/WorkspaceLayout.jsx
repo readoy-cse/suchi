@@ -80,6 +80,12 @@ export function WorkspaceLayout({ children }) {
       </header>
       {error && <p className="mx-auto max-w-7xl px-5 pt-4 text-sm text-red-700 sm:px-8" role="alert">{error}</p>}
       {children}
+      <footer className="mx-auto mt-12 max-w-7xl px-4 pb-7 sm:px-8">
+        <div className="flex flex-col gap-3 border-t border-[#d8ddd5]/80 pt-5 text-xs text-[#63756d] sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} Suchi <span aria-hidden="true" className="px-1.5 text-[#a75a3b]">·</span> Made for better class communication</p>
+          <Link className="w-fit font-semibold text-[#245444] underline decoration-[#a8b9ac] underline-offset-4 transition hover:text-[#a75a3b] hover:decoration-[#a75a3b]" to="/the-people-behind-suchi">The people behind Suchi <span aria-hidden="true">↗</span></Link>
+        </div>
+      </footer>
     </div>
   );
 }
