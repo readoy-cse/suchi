@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { WorkspaceLayout } from "../../layouts/WorkspaceLayout.jsx";
 import { useAuth } from "../auth/useAuth.js";
 import { CommentsPanel } from "../comments/CommentsPanel.jsx";
@@ -20,7 +20,7 @@ function StatusLabel({ status }) {
 
 function SubmissionCard({ item, actions, withComments = false, showContributor = false }) {
   return (
-    <article className="border-b border-[#d8ddd5] py-6">
+    <article className="workspace-panel mb-3 rounded-[20px] p-4 sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2.5">
@@ -52,6 +52,12 @@ export function EventsPage() {
   const [items, setItems] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const now = new Date();
+  const upcomingEvent = items
+    .filter((item) => item.type === "event" && item.eventDate && new Date(item.eventDate) > now)
+    .sort((left, right) => new Date(left.eventDate) - new Date(right.eventDate))[0];
+  const latestUpdate = [...items].sort((left, right) => new Date(right.createdAt ?? right.publishedAt ?? 0) - new Date(left.createdAt ?? left.publishedAt ?? 0))[0];
+  const highlightedUpdate = upcomingEvent ?? latestUpdate;
 
   useEffect(() => {
     let active = true;
@@ -70,10 +76,27 @@ export function EventsPage() {
 
   return (
     <WorkspaceLayout>
-      <main className="mx-auto max-w-7xl px-5 py-9 sm:px-8 sm:py-12">
+      <main className="mx-auto max-w-7xl px-5 py-6 sm:px-8 sm:py-8">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a75a3b]">Class community</p>
         <h1 className="mt-3 font-display text-3xl font-semibold sm:text-4xl">Events, news & suggestions</h1>
         <p className="mt-2 text-sm text-[#63756d]">Only approved posts appear here.</p>
+        <section className="mt-4 grid gap-2.5 sm:grid-cols-5" aria-label="Community updates overview">
+          <div className="relative isolate overflow-hidden rounded-[18px] bg-[#17392f] px-4 py-3.5 text-white shadow-[0_20px_45px_-36px_rgba(23,57,47,0.8)] sm:col-span-3">
+            <div aria-hidden="true" className="absolute -right-5 -top-12 -z-10 size-28 rounded-full border border-white/10" />
+            <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#d6ef79]">Class community</p>
+            <p className="mt-1 font-display text-lg font-bold tracking-[-0.03em]">{items.length} published {items.length === 1 ? "update" : "updates"}</p>
+            <p className="mt-0.5 text-xs text-white/65">Events, news and useful updates from classmates.</p>
+          </div>
+          <div className="flex min-w-0 items-center justify-between gap-3 rounded-[18px] border border-[#e2e8de] bg-[#eef7cc] px-4 py-3.5 text-[#17392f] sm:col-span-2">
+            <div className="min-w-0">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#526c3d]">{upcomingEvent ? "Next event" : "Latest update"}</p>
+              {highlightedUpdate ? <>
+                <p className="mt-1 truncate font-display text-base font-bold tracking-[-0.02em]">{highlightedUpdate.title}</p>
+                <p className="mt-0.5 truncate text-xs text-[#526c5d]">{[highlightedUpdate.type, highlightedUpdate.eventDate && new Date(highlightedUpdate.eventDate).toLocaleString(), highlightedUpdate.location].filter(Boolean).join(" · ") || "Recently published"}</p>
+              </> : <p className="mt-1 font-display text-base font-bold">Nothing to highlight yet.</p>}
+            </div>
+          </div>
+        </section>
         <div className="mt-6">
           <CollectionState loading={loading} error={error} empty={items.length === 0 && !loading && !error ? "Nothing has been published yet." : ""}>
             {items.map((item) => <SubmissionCard key={item._id} item={item} withComments showContributor />)}
@@ -86,6 +109,7 @@ export function EventsPage() {
 
 export function SubmissionFormPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const editId = searchParams.get("edit");
   const [values, setValues] = useState({ title: "", type: "event", description: "", eventDate: "", location: "", resourceUrl: "" });
@@ -125,6 +149,7 @@ export function SubmissionFormPage() {
       });
       setMessage(item.status === "approved" ? "Published successfully." : "Sent for review. You can track its status in My items.");
       if (!editId) setValues({ title: "", type: "event", description: "", eventDate: "", location: "", resourceUrl: "" });
+      navigate(item.status === "approved" ? "/events" : "/submissions/mine", { replace: true });
     } catch (submitError) {
       setError(submitError.message);
     } finally {
@@ -134,15 +159,15 @@ export function SubmissionFormPage() {
 
   return (
     <WorkspaceLayout>
-      <main className="mx-auto max-w-3xl px-5 py-9 sm:px-8 sm:py-12">
+      <main className="mx-auto max-w-3xl px-5 py-6 sm:px-8 sm:py-8">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a75a3b]">{canPublish ? "Publish to class" : "Student contribution"}</p>
         <h1 className="mt-3 font-display text-3xl font-semibold">{editId ? "Edit pending submission" : "Share an update"}</h1>
         <p className="mt-2 text-sm leading-6 text-[#63756d]">{canPublish ? "Posts by Admin and CR are published immediately." : "Student posts are reviewed before they appear in the class feed."}</p>
         {loading ? <p className="mt-8 text-sm text-[#63756d]" role="status">Loading submission...</p> : (
-          <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
+          <form className="workspace-panel mt-6 space-y-5 rounded-[20px] p-5 sm:p-6" onSubmit={handleSubmit}>
             <div>
               <label className="mb-1.5 block text-sm font-medium" htmlFor="submission-title">Title</label>
-              <input className="w-full rounded-lg border border-[#cbd4cb] bg-white px-3.5 py-3 text-sm outline-none focus:border-[#45835e] focus:ring-2 focus:ring-[#45835e]/20" id="submission-title" name="title" minLength={3} maxLength={160} required value={values.title} onChange={updateField} />
+              <input className="w-full rounded-lg border border-[#cbd4cb] bg-white px-3.5 py-3 text-sm outline-none focus:border-[#245444] focus:ring-2 focus:ring-[#245444]/20" id="submission-title" name="title" minLength={3} maxLength={160} required value={values.title} onChange={updateField} />
             </div>
             <div className="grid gap-5 sm:grid-cols-2">
               <div>
@@ -156,7 +181,7 @@ export function SubmissionFormPage() {
             </div>
             <div>
               <label className="mb-1.5 block text-sm font-medium" htmlFor="submission-description">Description</label>
-              <textarea className="min-h-36 w-full rounded-lg border border-[#cbd4cb] bg-white px-3.5 py-3 text-sm outline-none focus:border-[#45835e] focus:ring-2 focus:ring-[#45835e]/20" id="submission-description" name="description" maxLength={10000} required value={values.description} onChange={updateField} />
+              <textarea className="min-h-36 w-full rounded-lg border border-[#cbd4cb] bg-white px-3.5 py-3 text-sm outline-none focus:border-[#245444] focus:ring-2 focus:ring-[#245444]/20" id="submission-description" name="description" maxLength={10000} required value={values.description} onChange={updateField} />
             </div>
             <div className="grid gap-5 sm:grid-cols-2">
               <div>
@@ -212,7 +237,7 @@ export function MySubmissionsPage() {
 
   return (
     <WorkspaceLayout>
-      <main className="mx-auto max-w-7xl px-5 py-9 sm:px-8 sm:py-12">
+      <main className="mx-auto max-w-7xl px-5 py-6 sm:px-8 sm:py-8">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a75a3b]">Your contributions</p>
         <h1 className="mt-3 font-display text-3xl font-semibold">My submissions</h1>
         <div className="mt-5">
@@ -253,13 +278,13 @@ export function ReviewQueuePage() {
 
   return (
     <WorkspaceLayout>
-      <main className="mx-auto max-w-7xl px-5 py-9 sm:px-8 sm:py-12">
+      <main className="mx-auto max-w-7xl px-5 py-6 sm:px-8 sm:py-8">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a75a3b]">Moderation</p>
         <h1 className="mt-3 font-display text-3xl font-semibold">Review queue</h1>
         <p className="mt-2 text-sm text-[#63756d]">Approving a post makes it visible in the class feed.</p>
         <CollectionState loading={loading} error={error} empty={items.length === 0 && !loading && !error ? "The review queue is clear." : ""}>
           {items.map((item) => (
-            <article className="border-b border-[#d8ddd5] py-6" key={item._id}>
+            <article className="workspace-panel mb-3 rounded-[20px] p-4 sm:p-5" key={item._id}>
               <div className="flex flex-wrap items-center gap-2.5">
                 <h2 className="text-lg font-semibold">{item.title}</h2>
                 <span className="text-xs uppercase tracking-[0.12em] text-[#849189]">{item.type}</span>

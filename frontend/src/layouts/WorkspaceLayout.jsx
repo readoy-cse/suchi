@@ -37,8 +37,8 @@ export function WorkspaceLayout({ children }) {
   }
 
   return (
-    <div className="min-h-screen bg-[#f4f4ef] text-[#17392f]">
-      <header className="border-b border-[#d8ddd5] bg-[#fbfbf8]">
+    <div className="workspace-canvas min-h-screen text-[#17392f]">
+      <header className="sticky top-0 z-40 border-b border-[#d8ddd5]/80 bg-[#fbfbf8]/90 shadow-[0_4px_18px_-16px_rgba(23,57,47,0.6)] backdrop-blur-xl">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-3 sm:px-8 sm:py-4">
           <Link className="flex items-center gap-3" to="/" aria-label="Suchi dashboard">
             <span className="font-bengali text-[29px] font-bold leading-none tracking-tight text-[#17392f]">সূচি</span>
@@ -52,7 +52,7 @@ export function WorkspaceLayout({ children }) {
             <NavLink className={navClass} to="/events">Events</NavLink>
             {canManage && (
               <>
-                <button aria-expanded={manageOpen} aria-haspopup="true" className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold hover:bg-[#eff2e9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a75a3b] ${manageOpen ? "bg-[#eff2e9] text-[#17392f]" : "text-[#354f45]"}`} onClick={(event) => { positionMenu(event, 224, user.role === "admin" ? 230 : 170); setManageOpen((open) => !open); setProfileOpen(false); }} type="button">
+                <button aria-expanded={manageOpen} aria-haspopup="true" className={`flex shrink-0 items-center gap-2 whitespace-nowrap rounded-lg px-3 py-2 text-sm font-semibold hover:bg-[#eff2e9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a75a3b] ${manageOpen ? "bg-[#eff2e9] text-[#17392f]" : "text-[#354f45]"}`} onClick={(event) => { positionMenu(event, 224, user.role === "admin" ? 280 : 220); setManageOpen((open) => !open); setProfileOpen(false); }} type="button">
                   {user.role === "admin" ? "Admin" : "Class Rep"} <svg aria-hidden="true" className={`transition-transform ${manageOpen ? "rotate-180" : ""}`} fill="none" height="12" viewBox="0 0 12 12" width="12"><path d="m2.5 4.5 3.5 3 3.5-3" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"/></svg>
                 </button>
                 {manageOpen && <div className="fixed z-[100] w-56 rounded-xl border border-[#d8ddd5] bg-[#fbfbf8] p-2 shadow-xl" style={menuPosition}>
@@ -60,17 +60,19 @@ export function WorkspaceLayout({ children }) {
                   <NavLink onClick={closeManageMenu} className={({ isActive }) => `block rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-[#eff2e9] ${isActive ? "bg-[#eff2e9] text-[#17392f]" : "text-[#354f45]"}`} to="/routines/create">Class routine</NavLink>
                   <NavLink onClick={closeManageMenu} className={({ isActive }) => `block rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-[#eff2e9] ${isActive ? "bg-[#eff2e9] text-[#17392f]" : "text-[#354f45]"}`} to="/exams/create">Exam schedule</NavLink>
                   <NavLink onClick={closeManageMenu} className={({ isActive }) => `block rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-[#eff2e9] ${isActive ? "bg-[#eff2e9] text-[#17392f]" : "text-[#354f45]"}`} to="/notices/create">Notice</NavLink>
+                  <NavLink onClick={closeManageMenu} className={({ isActive }) => `block rounded-lg px-3 py-2.5 text-sm font-medium hover:bg-[#eff2e9] ${isActive ? "bg-[#eff2e9] text-[#17392f]" : "text-[#354f45]"}`} to="/notifications">Telegram delivery</NavLink>
                   {user.role === "admin" && <NavLink onClick={closeManageMenu} className={({ isActive }) => `mt-2 block border-t border-[#e3e6df] px-3 py-3 text-sm font-semibold hover:bg-[#eff2e9] ${isActive ? "text-[#17392f]" : "text-[#354f45]"}`} to="/users">Manage users</NavLink>}
                 </div>}
               </>
             )}
-            <button aria-label={`Open ${user.name}'s profile menu`} aria-expanded={profileOpen} aria-haspopup="true" className="grid size-10 shrink-0 place-items-center rounded-full border border-[#cbd4cb] bg-white text-sm font-bold text-[#17392f] hover:bg-[#eff2e9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a75a3b]" type="button" onClick={(event) => { positionMenu(event, 240, 150); setProfileOpen((open) => !open); setManageOpen(false); }}>
+            <button aria-label={`Open ${user.name}'s profile menu`} aria-expanded={profileOpen} aria-haspopup="true" className="grid size-10 shrink-0 place-items-center rounded-full border border-[#cbd4cb] bg-white text-sm font-bold text-[#17392f] hover:bg-[#eff2e9] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a75a3b]" type="button" onClick={(event) => { positionMenu(event, 240, 200); setProfileOpen((open) => !open); setManageOpen(false); }}>
               {profileInitial}
             </button>
             {profileOpen && <div className="fixed z-[100] w-60 rounded-xl border border-[#d8ddd5] bg-[#fbfbf8] p-2 shadow-xl" style={menuPosition}>
               <div className="border-b border-[#e3e6df] px-3 py-2"><p className="truncate text-sm font-semibold">{user.name}</p><p className="truncate text-xs text-[#63756d]">{user.email}</p></div>
               <Link className="block rounded-lg px-3 py-2.5 text-sm font-medium text-[#354f45] hover:bg-[#eff2e9]" onClick={() => setProfileOpen(false)} to="/account">Account & password</Link>
               <Link className="block rounded-lg px-3 py-2.5 text-sm font-medium text-[#354f45] hover:bg-[#eff2e9]" onClick={() => setProfileOpen(false)} to="/submissions/mine">My contributions</Link>
+              <Link className="block rounded-lg px-3 py-2.5 text-sm font-medium text-[#245444] hover:bg-[#eff2e9]" onClick={() => setProfileOpen(false)} to="/telegram-invite">Telegram channel</Link>
               <button className="block w-full rounded-lg px-3 py-2.5 text-left text-sm font-semibold text-[#8b3c2a] hover:bg-[#fbefea]" type="button" onClick={() => { setProfileOpen(false); handleLogout(); }}>Sign out</button>
             </div>}
           </nav>
@@ -78,6 +80,12 @@ export function WorkspaceLayout({ children }) {
       </header>
       {error && <p className="mx-auto max-w-7xl px-5 pt-4 text-sm text-red-700 sm:px-8" role="alert">{error}</p>}
       {children}
+      <footer className="mx-auto mt-12 max-w-7xl px-4 pb-7 sm:px-8">
+        <div className="flex flex-col gap-3 border-t border-[#d8ddd5]/80 pt-5 text-xs text-[#63756d] sm:flex-row sm:items-center sm:justify-between">
+          <p>© {new Date().getFullYear()} Suchi <span aria-hidden="true" className="px-1.5 text-[#a75a3b]">·</span> Made for better class communication</p>
+          <Link className="w-fit font-semibold text-[#245444] underline decoration-[#a8b9ac] underline-offset-4 transition hover:text-[#a75a3b] hover:decoration-[#a75a3b]" to="/the-people-behind-suchi">The people behind Suchi <span aria-hidden="true">↗</span></Link>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -12,6 +12,7 @@ import { commentRouter } from "./modules/comments/comment.routes.js";
 import { submissionRouter } from "./modules/submissions/submission.routes.js";
 import { userRouter } from "./modules/users/user.routes.js";
 import { healthRouter } from "./routes/health.js";
+import { publicConfigRouter } from "./routes/public-config.js";
 
 export const app = express();
 
@@ -20,6 +21,7 @@ app.use(cors({ origin: clientOrigin, credentials: true }));
 app.use(express.json({ limit: "32kb" }));
 app.use(cookieParser());
 app.use("/api/health", healthRouter);
+app.use("/api/config", publicConfigRouter);
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/routines", routineRouter);

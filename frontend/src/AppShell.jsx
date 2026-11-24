@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./features/auth/AuthProvider.jsx";
 import { AuthPage } from "./features/auth/AuthPage.jsx";
+import { TelegramInvitePage } from "./features/auth/TelegramInvitePage.jsx";
 import { AccountPage } from "./features/auth/AccountPage.jsx";
 import { AcademicCollectionPage, AcademicDetailPage } from "./features/academics/AcademicCollectionPage.jsx";
 import { DashboardPage } from "./features/dashboard/DashboardPage.jsx";
@@ -8,6 +9,7 @@ import { NotificationLogsPage } from "./features/notifications/NotificationLogsP
 import { EventsPage, MySubmissionsPage, ReviewQueuePage, SubmissionFormPage } from "./features/submissions/SubmissionPages.jsx";
 import { useAuth } from "./features/auth/useAuth.js";
 import { UserDetailPage, UsersPage } from "./features/users/UsersPage.jsx";
+import { TeamPage } from "./features/team/TeamPage.jsx";
 
 function LoadingPage() {
   return (
@@ -53,8 +55,10 @@ export default function AppShell() {
       <Routes>
         <Route path="/login" element={<PublicRoute><AuthPage mode="login" /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><AuthPage mode="register" /></PublicRoute>} />
+        <Route path="/telegram-invite" element={<ProtectedRoute><TelegramInvitePage /></ProtectedRoute>} />
         <Route path="/" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
         <Route path="/account" element={<ProtectedRoute><AccountPage /></ProtectedRoute>} />
+        <Route path="/the-people-behind-suchi" element={<ProtectedRoute><TeamPage /></ProtectedRoute>} />
         <Route path="/routines" element={<ProtectedRoute><AcademicCollectionPage type="routines" /></ProtectedRoute>} />
         <Route path="/routines/create" element={<ProtectedRoute roles={["admin", "cr"]}><AcademicCollectionPage type="routines" mode="create" /></ProtectedRoute>} />
         <Route path="/routines/edit/:id" element={<ProtectedRoute roles={["admin", "cr"]}><AcademicCollectionPage type="routines" mode="edit" /></ProtectedRoute>} />
