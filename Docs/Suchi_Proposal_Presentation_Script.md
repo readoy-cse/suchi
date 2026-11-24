@@ -61,3 +61,4 @@ Now, Sakib and Taki will take your questions.
 **Taki:** Please feel free to ask us about the problem, the proposed solution, the technology, or our team roles.
 
 **After the questions:** Thank you for your time and feedback. Your questions and suggestions will help us improve our proposal.
+
