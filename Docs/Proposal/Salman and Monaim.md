@@ -33,32 +33,3 @@ Users can also comment on published content. Telegram notifications may be used 
 Suchi has three roles: Student, CR, and Admin. Each role has different permissions, checked by the system.
 
 I will now hand over to Nahian to introduce the proposed technology stack and our team.
-
-## Step 4 — A Modern JavaScript Stack (Nahian)
-
-For Suchi, we propose a modern JavaScript stack.
-
-The frontend uses React, Vite, React Router, and Tailwind CSS to build the web interface. The backend uses Node.js and Express to provide the application’s API. MongoDB stores the project information, and Mongoose helps structure the data.
-
-We also plan to use Zod to validate information submitted to the system. Access will depend on user roles. Telegram is an optional integration for notifications.
-
-These technologies give us a practical foundation for building the proposed class information platform.
-
-## Step 5 — The People Behind Suchi (Nahian)
-
-Our team has five contributors, with different responsibilities.
-
-Sakib is the System Architect. I am Nahian, and I work on Frontend Development. Taki works on Backend Integration. Salman is responsible for Deployment and Security. Munaim works on Software Quality Assurance.
-
-We are bringing these responsibilities together to develop the Suchi proposal as a team.
-
-Now, Sakib and Taki will take your questions.
-
-## Step 6 — Questions and Answers (Sakib and Taki)
-
-**Sakib:** Thank you for listening to our project proposal. We are ready to answer your questions.
-
-**Taki:** Please feel free to ask us about the problem, the proposed solution, the technology, or our team roles.
-
-**After the questions:** Thank you for your time and feedback. Your questions and suggestions will help us improve our proposal.
-
