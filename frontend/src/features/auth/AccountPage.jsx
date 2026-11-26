@@ -35,12 +35,12 @@ export function AccountPage() {
 
   return (
     <WorkspaceLayout>
-      <main className="mx-auto max-w-3xl px-5 py-9 sm:px-8 sm:py-12">
+      <main className="mx-auto max-w-3xl px-5 py-6 sm:px-8 sm:py-8">
         <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[#a75a3b]">Your account</p>
         <h1 className="mt-2 font-display text-3xl font-semibold sm:text-4xl">Account settings</h1>
         <p className="mt-2 text-sm text-[#63756d]">Update your profile name or change your password.</p>
 
-        <form className="mt-8 space-y-5 rounded-2xl border border-[#d8ddd5] bg-[#fbfbf8] p-5 sm:p-7" onSubmit={handleSubmit}>
+        <form className="workspace-panel mt-6 space-y-5 rounded-[20px] p-5 sm:p-6" onSubmit={handleSubmit}>
           <div>
             <label className="mb-1.5 block text-sm font-semibold" htmlFor="account-email">Email address</label>
             <input className="w-full rounded-lg border border-[#d8ddd5] bg-[#f4f4ef] px-3.5 py-3 text-sm text-[#63756d]" id="account-email" readOnly value={user.email} />

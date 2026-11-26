@@ -6,7 +6,12 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
-      "/api": "https://suchi-yimo.onrender.com",
+      "/api": {
+        target: "https://suchi-yimo.onrender.com",
+        // target: "http://localhost:4000",
+        changeOrigin: true,
+        secure: true,
+      },
     },
   },
 });

@@ -416,4 +416,3 @@ See [demo-script.md](demo-script.md) for the existing detailed walkthrough.
 - Authentication and roles: `backend/src/modules/auth/`, `backend/src/middleware/auth.js`
 - Domain schemas and routes: `backend/src/modules/`
 - Environment template: `backend/.env.example`
-
